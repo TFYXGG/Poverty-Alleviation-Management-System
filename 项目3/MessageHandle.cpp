@@ -109,6 +109,7 @@ void HandleThread::onHttp()
 			pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 			pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
 			pResponse->setVersion("HTTP/1.1");
+			pResponse->setHeaders("Content-Type", "text/html");
 		}
 		else
 		{
@@ -132,13 +133,14 @@ void HandleThread::onHttp()
 void HandleThread::sendResponseMessage()
 {
 	std::string rs;
-	std::stringstream rss(rs);
+	std::ostringstream rss;
 	rss << pResponse->version << " " << pResponse->status << " " << pResponse->reasonPhrase << "\r\n";
 	for (std::map<std::string, std::string>::iterator it = pResponse->headers.begin(); it != pResponse->headers.end(); it++)
 	{
 		rss << it->first << ": " << it->second << "\r\n";
 	}
 	rss << "\r\n";
+	rs = rss.str();
 	s->sendData(rs.data(), rs.length());
 	int len = 0;
 	try {
