@@ -118,6 +118,7 @@ public:
 	void openFileSetBody(std::string fileName);
 	//析构
 	~ResponseMessage();
+
 	//转换到字节
 	int getByte(char *&buf);
 private:
