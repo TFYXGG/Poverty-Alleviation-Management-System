@@ -3,6 +3,7 @@
 #include "util.h"
 #include <fstream>
 #include <string>
+#include <sstream>
 
 
 
@@ -267,4 +268,34 @@ ResponseMessage::~ResponseMessage()
 {
 	if (entityBody != nullptr)
 		delete[] entityBody;
+}
+
+int ResponseMessage::getByte(char *&buf)
+{
+	std::string rs;
+	std::ostringstream rss;
+	rss << this->version << " " << this->status << " " << this->reasonPhrase << "\r\n";
+	for (std::map<std::string, std::string>::iterator it = this->headers.begin(); it != this->headers.end(); it++)
+	{
+		rss << it->first << ": " << it->second << "\r\n";
+	}
+	rss << "\r\n";
+	rs = rss.str();
+	int bodyLen = 0;
+	try {
+		bodyLen = atoi(this->headers.at("Content-Length").data());
+	}
+	catch (std::out_of_range e)
+	{
+		std::cout << "获取body内容时引发了异常:" << e.what() << std::endl;
+	}
+	int len = bodyLen + rs.size();
+	if (buf != nullptr)
+	{
+		delete[] buf;
+	}
+	buf = new char[len];
+	memcpy(buf, rs.c_str(), rs.size());
+	memcpy(buf + rs.size(), entityBody, bodyLen);
+	return len;
 }

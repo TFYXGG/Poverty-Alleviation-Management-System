@@ -80,17 +80,6 @@ void HandleThread::run()
 	else
 		pResponse->setHeaders("Connection", "Keep-Alive");
 	sendResponseMessage();
-	if (pRequest != nullptr)
-	{
-		delete pRequest;
-		pRequest = nullptr;
-	}
-	if (pResponse != nullptr)
-	{
-		delete pResponse;
-		pResponse = nullptr;
-	}
-	s->close();
 }
 
 void HandleThread::onHttp()
@@ -132,23 +121,8 @@ void HandleThread::onHttp()
 
 void HandleThread::sendResponseMessage()
 {
-	std::string rs;
-	std::ostringstream rss;
-	rss << pResponse->version << " " << pResponse->status << " " << pResponse->reasonPhrase << "\r\n";
-	for (std::map<std::string, std::string>::iterator it = pResponse->headers.begin(); it != pResponse->headers.end(); it++)
-	{
-		rss << it->first << ": " << it->second << "\r\n";
-	}
-	rss << "\r\n";
-	rs = rss.str();
-	s->sendData(rs.data(), rs.length());
-	int len = 0;
-	try {
-		len = atoi(pResponse->headers.at("Content-Length").data());
-		s->sendData(pResponse->entityBody, len);
-	}
-	catch (std::out_of_range e)
-	{
-		std::cout << "发送消息体时引发了一个异常:" << e.what() << std::endl;
-	}
+	char *buf = nullptr;
+	int len = pResponse->getByte(buf);
+	s->sendData(buf, len);
+	delete[] buf;
 }

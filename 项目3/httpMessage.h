@@ -120,6 +120,8 @@ public:
 	~ResponseMessage();
 	//声明友元类
 	friend class HandleThread;
+	//转换到字节
+	int getByte(char *&buf);
 private:
 	std::string version;	//报文所使用的HTTP版本
 	std::string status;		//状态码
