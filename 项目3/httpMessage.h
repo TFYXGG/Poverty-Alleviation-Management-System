@@ -118,8 +118,6 @@ public:
 	void openFileSetBody(std::string fileName);
 	//析构
 	~ResponseMessage();
-	//声明友元类
-	friend class HandleThread;
 	//转换到字节
 	int getByte(char *&buf);
 private:
