@@ -256,7 +256,7 @@ void ResponseMessage::openFileSetBody(std::string fileName)
 	{
 		delete[] entityBody;
 	}
-	entityBody = new char[len];
+	entityBody = new char[len] {0};
 	//读取文件内容
 	file.seekg(0, std::ios::beg);
 	file.read(entityBody, len);

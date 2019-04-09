@@ -13,5 +13,5 @@ std::vector<std::string> split(std::string str, std::string pattern);
 //第三个参数为键与值间分割符
 std::map<std::string, std::string> strToMap(std::string str, std::string, std::string);
 
-//不区分大小写比较
+//不区分大小写比较 相等返回true
 bool compareNoCase(std::string str1, std::string str2);

@@ -117,13 +117,12 @@
   <ItemGroup>
     <ClCompile Include="httpMessage.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MessageHandle.cpp" />
     <ClCompile Include="socket.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="httpMessage.h" />
-    <ClInclude Include="MessageHandle.h" />
+    <ClInclude Include="MessageHandle.hpp" />
     <ClInclude Include="socket.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
