@@ -110,16 +110,17 @@ void HandleThread::run()
 		pRequest = new RequestMessage(buf, len);
 		if (!onHttp())
 			onDefaultHttp();
+		pResponse->setVersion("HTTP/1.1");
 		pResponse->setHeaders("Connection", "Close");
 		sendResponseMessage();
 	}
 	catch (...)
 	{
 		std::cout << "无法解析的消息" << std::endl;
+		pResponse->setVersion("HTTP/1.1");
 		pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::not_found));
 		pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::not_found));
 	}
-	pResponse->setVersion("HTTP/1.1");
 	if (s != nullptr)
 	{
 		this->s->close();

@@ -6,9 +6,7 @@ using namespace std;
 class PovertyAlleviationManagementSystem:public HandleThread
 {
 public:
-	PovertyAlleviationManagementSystem(Socket *s) :HandleThread(s)
-	{
-	}
+	PovertyAlleviationManagementSystem(Socket *s) :HandleThread(s) {	}
 	bool onHttp()
 	{
 		std::string method = pRequest->getMethod();
