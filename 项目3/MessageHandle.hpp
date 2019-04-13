@@ -103,24 +103,40 @@ void HandleThread::run()
 {
 	//暂时未实现长链接功能
 	char buf[BufSizeMax];
-	int len = s->recvData(buf, BufSizeMax);
-	try
-	{
-		pResponse = new ResponseMessage();
-		pRequest = new RequestMessage(buf, len);
-		if (!onHttp())
-			onDefaultHttp();
-		pResponse->setVersion("HTTP/1.1");
-		pResponse->setHeaders("Connection", "Close");
-		sendResponseMessage();
-	}
-	catch (...)
-	{
-		std::cout << "无法解析的消息" << std::endl;
-		pResponse->setVersion("HTTP/1.1");
-		pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::not_found));
-		pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::not_found));
-	}
+	s->setRcvTimeO(1000 * 60 * 60);		//设置超时时间1小时
+	do {
+		if (pResponse != nullptr)
+		{
+			delete pResponse;
+			pResponse = nullptr;
+		}
+		if (pRequest != nullptr)
+		{
+			delete pRequest;
+			pRequest = nullptr;
+		}
+		int len = s->recvData(buf, BufSizeMax);
+		if (len <= 0)
+			break;
+		try
+		{
+			pResponse = new ResponseMessage();
+			pRequest = new RequestMessage(buf, len);
+			if (!onHttp())
+				onDefaultHttp();
+			pResponse->setVersion("HTTP/1.1");
+			pResponse->setHeaders("Connection", "Keep-Alive");
+			sendResponseMessage();
+		}
+		catch (...)
+		{
+			//std::cout << "无法解析的消息" << std::endl;
+			pResponse->setVersion("HTTP/1.1");
+			pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::not_found));
+			pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::not_found));
+			sendResponseMessage();
+		}
+	} while (compareNoCase(pRequest->getHeaders("Connection"), "Keep-Alive"));
 	if (s != nullptr)
 	{
 		this->s->close();
@@ -137,9 +153,16 @@ void HandleThread::onDefaultHttp()
 	{
 		//对GET请求的处理
 		std::string URL = pRequest->getURL();
-		pResponse->openFileSetBody(root + URL);
-		pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
-		pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
+		if (pResponse->openFileSetBody(root + URL))
+		{
+			pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
+			pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
+		}
+		else
+		{
+			pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::not_found));
+			pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::not_found));
+		}
 	}
 	else if (method == "POST")
 	{

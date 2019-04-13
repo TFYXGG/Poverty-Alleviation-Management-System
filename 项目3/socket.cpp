@@ -35,7 +35,7 @@ ServerSocket::ServerSocket(int port)
 	{
 		printf("bind error !");
 	}
-	if (listen(slisten, 5) == SOCKET_ERROR)
+	if (listen(slisten, 100) == SOCKET_ERROR)	//最大连接数
 	{
 		printf("listen error !");
 		return;
@@ -85,4 +85,14 @@ int Socket::recvData(char * Data, int size_max)
 void Socket::close()
 {
 	closesocket(sClient);
+}
+
+void Socket::setRcvTimeO(long long time)
+{
+	setsockopt(sClient, SOL_SOCKET, SO_RCVTIMEO, (char *)&time, sizeof(long long));
+}
+
+void Socket::setSndTimeO(long long time)
+{
+	setsockopt(sClient, SOL_SOCKET, SO_SNDTIMEO, (char *)&time, sizeof(long long));
 }

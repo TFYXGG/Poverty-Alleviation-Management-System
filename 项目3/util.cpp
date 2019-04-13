@@ -1,5 +1,7 @@
 #include "util.h"
 #include <algorithm>
+#include <Windows.h>
+#include <codecvt>
 
 std::vector<std::string> split(std::string str, std::string pattern)
 {
@@ -51,3 +53,34 @@ bool compareNoCase(std::string str1, std::string str2)
 	std::string strB = strToLower(str2);
 	return (strA == strB);
 }
+
+std::string utf_82String(std::string str)
+{
+	str.erase(std::remove(str.begin(), str.end(), '%'), str.end());
+	int tempLen = str.length();
+	int UTF8Len = tempLen / 2;
+	char * const UTF_8Code = new char[UTF8Len + 1]{ 0 };
+	for (int i = 0; i < UTF8Len * 2;)
+	{
+		char convert[3] = { 0 };
+		convert[0] = str[i++];
+		convert[1] = str[i++];
+		int tempint = strtol(convert, nullptr, 16);
+		UTF_8Code[i / 2 - 1] = tempint;
+	}
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+	std::wstring wString = conv.from_bytes(UTF_8Code);
+	delete[] UTF_8Code;
+	char buf[256] = { 0 };
+	setlocale(LC_ALL, "chs");
+	wcstombs(buf, wString.c_str(), 256);
+	setlocale(LC_ALL, "c");
+	return buf;
+}
+
+std::string string2Utf_8(std::string str)
+{
+	//Œ¥ µœ÷
+	return "";
+}
+

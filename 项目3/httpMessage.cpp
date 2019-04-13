@@ -22,7 +22,7 @@ RequestMessage::RequestMessage(char * message, int len):entityBody(nullptr)
 	}
 	catch (std::out_of_range e)
 	{
-		std::cout <<"初始化URL参数时发生异常:"<<e.what() << std::endl;
+		//std::cout <<"初始化URL参数时发生异常:"<<e.what() << std::endl;
 	}
 	version = startLineVs.at(2);
 	//消息头部初始化
@@ -41,7 +41,7 @@ RequestMessage::RequestMessage(char * message, int len):entityBody(nullptr)
 		memcpy(entityBody, message + len - bodyLen, bodyLen);
 	}catch(std::out_of_range e)
 	{
-		std::cout << "初始化消息体时发生异常:" << e.what() << std::endl;
+		//std::cout << "初始化消息体时发生异常:" << e.what() << std::endl;
 	}
 }
 
@@ -237,16 +237,16 @@ void ResponseMessage::setBody(const char * data, int size)
 	memcpy(this->entityBody, data, size);
 }
 
-void ResponseMessage::openFileSetBody(std::string fileName)
+bool ResponseMessage::openFileSetBody(std::string fileName)
 {
 	int len = 0;
 	//以二进制方式打开文件
 	std::ifstream file(fileName,std::ios::binary);
 	if (!file.is_open())
 	{
-		std::cout << fileName << "打开失败" << std::endl;
+		//std::cout << fileName << "打开失败" << std::endl;
 		file.close();
-		return;
+		return false;
 	}
 	//获取文件大小
 	file.seekg(0, std::ios::end);
@@ -262,6 +262,7 @@ void ResponseMessage::openFileSetBody(std::string fileName)
 	file.read(entityBody, len);
 	setHeaders("Content-Length", std::to_string(len));
 	file.close();
+	return true;
 }
 
 ResponseMessage::~ResponseMessage()
@@ -287,7 +288,7 @@ int ResponseMessage::getByte(char *&buf)
 	}
 	catch (std::out_of_range e)
 	{
-		std::cout << "获取body内容时引发了异常:" << e.what() << std::endl;
+		//std::cout << "获取body内容时引发了异常:" << e.what() << std::endl;
 	}
 	int len = bodyLen + rs.size();
 	if (buf != nullptr)

@@ -15,3 +15,9 @@ std::map<std::string, std::string> strToMap(std::string str, std::string, std::s
 
 //不区分大小写比较 相等返回true
 bool compareNoCase(std::string str1, std::string str2);
+
+//UTF-8编码（%间隔）转单字符编码
+std::string utf_82String(std::string str);
+
+//单字符转UTF-8编码（%间隔）
+std::string string2Utf_8(std::string str);

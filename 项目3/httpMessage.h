@@ -115,7 +115,7 @@ public:
 	//设置消息主体 消息主体将重新分配空间（与传入参数不共享空间）
 	void setBody(const char * data, int size);
 	//打开文件设置消息体
-	void openFileSetBody(std::string fileName);
+	bool openFileSetBody(std::string fileName);
 	//析构
 	~ResponseMessage();
 	//转换到字节
