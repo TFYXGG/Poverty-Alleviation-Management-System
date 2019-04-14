@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <Windows.h>
 #include <codecvt>
+#include <sstream>
 
 std::vector<std::string> split(std::string str, std::string pattern)
 {
@@ -78,9 +79,41 @@ std::string utf_82String(std::string str)
 	return buf;
 }
 
+std::string UnicodeToUtf8(const std::wstring &strUnicode)
+{
+	int len = WideCharToMultiByte(CP_UTF8, 0, strUnicode.c_str(), -1, NULL, 0, NULL, NULL);
+	if (len == 0)
+	{
+		return "";
+	}
+
+	char *pRes = new char[len];
+	if (pRes == NULL)
+	{
+		return "";
+	}
+
+	WideCharToMultiByte(CP_UTF8, 0, strUnicode.c_str(), -1, pRes, len, NULL, NULL);
+	pRes[len - 1] = '\0';
+	std::string result = pRes;
+	delete[] pRes;
+
+	return result;
+}
+
 std::string string2Utf_8(std::string str)
 {
-	//Œ¥ µœ÷
-	return "";
+	setlocale(LC_ALL, "chs");
+	wchar_t pwcs[256];
+	mbstowcs(pwcs, str.c_str(), str.length());
+	std::string s = UnicodeToUtf8(pwcs);
+	unsigned char uc[256] = { 0 };
+	memcpy(uc, s.data(), s.length());
+	std::stringstream ss;
+	for (int i = 0; i < s.length(); i++)
+	{
+		ss << "%" << std::hex << (int)uc[i];
+	}
+	return ss.str();
 }
 
