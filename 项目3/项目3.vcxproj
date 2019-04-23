@@ -116,6 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Database.cpp" />
+    <ClCompile Include="logic.cpp" />
     <ClCompile Include="httpMessage.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="socket.cpp" />
@@ -125,6 +126,7 @@
     <ClInclude Include="Database.h" />
     <ClInclude Include="httpMessage.h" />
     <ClInclude Include="IdataBase.h" />
+    <ClInclude Include="logic.h" />
     <ClInclude Include="MessageHandle.hpp" />
     <ClInclude Include="socket.h" />
     <ClInclude Include="util.h" />

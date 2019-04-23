@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <sql.h>
 #include <sqlext.h>
+#include <WinSock.h>
 
 
 class Database :public IdataBase
