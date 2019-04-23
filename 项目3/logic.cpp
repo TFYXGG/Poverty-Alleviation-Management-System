@@ -7,90 +7,99 @@ Logic::Logic(IdataBase * db)
 
 int Logic::add(vector<string> information)
 {
-	string sql = R"(
-	insert
-	into 
-	TourismPovertyAlleviationFundManagementSystem 
-	values()";
-	for (int i = 0; i < information.size(); i++)
+	if (information.empty())
+		return -1;
+	stringstream ss;
+	ss << "insert into " << BasicTable << " values(";
+	ss << information.at(0);
+	for (int i = 1; i < information.size(); i++)
 	{
-		sql += information.at(i);
-		sql += ",";
+		ss << "," << information.at(i);
 	}
-	sql += ")";
-	return db->upData(sql);
+	ss << ")";
+	return db->upData(ss.str());
 }
 
 int Logic::del(int id)
 {
-	string sql = R"(
-	delete
-	from
-	TourismPovertyAlleviationFundManagementSystem
-	where id=)";
-	char buf[256];
-	itoa(id, buf, 10);
-	sql += buf;
-	return db->upData(sql);
+	stringstream ss;
+	ss << "delete from " << BasicTable << " where " << DB_BT_id << " " << id;
+	return db->upData(ss.str());
+}
+
+int Logic::del(string name)
+{
+	if (name.empty())
+		return -1;
+	stringstream ss;
+	ss << "delete from " << BasicTable << " where " << DB_BT_name << " = " << name;
+	return db->upData(ss.str());
 }
 
 int Logic::del(vector<int> ids)
 {	
 	if (ids.empty())
 		return -1;
-	string sql = R"(
-	delete
-	from
-	TourismPovertyAlleviationFundManagementSystem
-	where 1=0)";
+	stringstream ss;
+	ss << "delete from " << BasicTable << " where 1=0 ";
 	for (int i = 0; i < ids.size(); i++)
 	{
-		sql += " or";
-		sql += " id = ";
-		char buf[256];
-		itoa(ids[i], buf, 10);
-		sql += buf;
+		ss << "or " << DB_BT_id << " =" << ids.at(i) << " ";
 	}
-	return db->upData(sql);
+	return db->upData(ss.str());
 }
 
 int Logic::updata(int id, vector<map<string, string>> information)
 {
 	stringstream ss;
-	ss << R"(update
-		TourismPovertyAlleviationFundManagementSystem
-		set)";
-//	string sql = R"(
-//	update
-//	TourismPovertyAlleviationFundManagementSystem
-//	set
-//)";
+	ss << "update " << BasicTable << " set";
 	for (int i = 0; i < information.size(); i++) 
 	{
 		ss << information[i]["key"] << " = " << information[i]["value"] << ",";
-		//sql += information[i]["key"];
-		//sql += "=";
-		//sql += information[i]["value"];
-		//sql += ",";
 	}
-	ss << "where id = " << id;
-	/*sql += "where id = ";
-	char buf[256];
-	
-	sql+=*/
+	ss << "where " << DB_BT_id << " = " << id;
 	return db->upData(ss.str());
 }
 
 vector<vector<string>> Logic::find(vector<map<string, string>> information)
 {
+	if (information.empty())
+		return vector<vector<string>>();
 	stringstream ss;
-	ss << R"(
-	select *
-	from TourismPovertyAlleviationFundManagementSystem
-	where 1=1)";
+	ss << "select * from " << BasicTable << " where 1=1";
 	for (int i = 0; i < information.size(); i++)
 	{
 		ss << " and " << information[i]["key"] << information[i]["relation"] << information[i]["value"];
 	}
 	return db->query(ss.str());
+}
+int Logic::del(vector<string> names)
+{
+	if (names.empty())
+		return -1;
+	stringstream ss;
+	ss << "delete from " << BasicTable << " where 1=0";
+	for (int i = 0; i < names.size(); i++)
+	{
+		ss << " or " << DB_BT_name << " = " << names.at(i);
+	}
+	return db->upData(ss.str());
+}
+
+vector<vector<string>> Logic::find(string name, int month)
+{
+	stringstream ss;
+	ss << "select * from " << SummaryTable;
+	if (name.empty())
+		return db->query(ss.str());
+	ss << " where " << DB_ST_name << " = " << name;
+	if(month = -1)
+		return db->query(ss.str());
+	ss << " " << DB_ST_month << " = " << month;
+	return db->query(ss.str());
+}
+
+Logic::~Logic()
+{
+	delete db;
 }
