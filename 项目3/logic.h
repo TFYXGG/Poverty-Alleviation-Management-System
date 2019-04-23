@@ -39,7 +39,6 @@ class Logic
 public:
 	Logic(IdataBase *db);
 
-	//返回操作影响的行数 输入参数为键值对数组 information[0]{key = name,relation = "=" value = "大明宫"},information[1]{key = address,relation = "=" ,value = "西安"}
 	int add(vector<string> information);
 	//根据id删除
 	int del(int id);
@@ -47,6 +46,8 @@ public:
 	//修改 id不变 
 	int updata(int id, vector<map<string, string>> information);
 	//查找
+	//返回操作影响的行数 输入参数为键值对数组 information[0]{key = name,relation = "=" 
+	//value = "大明宫"},information[1]{key = address,relation = "=" ,value = "西安"}
 	vector<vector<string>> find(vector<map<string, string>> information);
 
 	//月汇总
@@ -58,7 +59,7 @@ public:
 	//month = -1时查找该景点所有月份数据 name为空时查找所有景点所有数据
 	vector<vector<string>> find(string name = "", int month = -1);
 
-private:
 	~Logic();
+private:
 	IdataBase *db;
 };

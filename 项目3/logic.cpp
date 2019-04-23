@@ -23,7 +23,7 @@ int Logic::add(vector<string> information)
 int Logic::del(int id)
 {
 	stringstream ss;
-	ss << "delete from " << BasicTable << " where " << DB_BT_id << " " << id;
+	ss << "delete from " << BasicTable << " where " << DB_BT_id << " = " << id;
 	return db->upData(ss.str());
 }
 
@@ -51,13 +51,17 @@ int Logic::del(vector<int> ids)
 
 int Logic::updata(int id, vector<map<string, string>> information)
 {
+	if (information.empty())
+		return -1;
 	stringstream ss;
-	ss << "update " << BasicTable << " set";
-	for (int i = 0; i < information.size(); i++) 
+	ss << "update " << BasicTable << " set ";
+	ss << information[0]["key"] << " = " << information[0]["value"];
+	for (int i = 1; i < information.size(); i++) 
 	{
-		ss << information[i]["key"] << " = " << information[i]["value"] << ",";
+		ss << "," << information[i]["key"] << " = " << information[i]["value"];
 	}
-	ss << "where " << DB_BT_id << " = " << id;
+	
+	ss << " where " << DB_BT_id << " = " << id;
 	return db->upData(ss.str());
 }
 

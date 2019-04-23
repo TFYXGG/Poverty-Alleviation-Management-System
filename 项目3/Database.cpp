@@ -42,9 +42,8 @@ vector<vector<string>> Database::query(string sql)
 	while (true)
 	{
 		char sz_buf[256];
-		char* pszBuf;
+		char pszBuf[1024];
 		SQLLEN buflen;
-		string Data;
 		vector<string> t;
 		if (SQLFetch(stmt) == SQL_NO_DATA)
 		{
@@ -52,14 +51,13 @@ vector<vector<string>> Database::query(string sql)
 		}
 		for (int i = 1; i <= colCount; i++)
 		{
+			string Data;
 			SQLColAttribute(stmt, i, SQL_DESC_NAME, sz_buf, 256, &buf_len, 0);
 			SQLColAttribute(stmt, i, SQL_DESC_TYPE, 0, 0, 0, &colType);
-			SQLColAttribute(stmt, i, SQL_DESC_LENGTH, NULL, 0, 0, &colLen);
-			pszBuf = new char[colLen + 1];
+			//SQLColAttribute(stmt, i, SQL_DESC_LENGTH, NULL, 0, 0, &colLen);
 			pszBuf[0] = '/0';
 			SQLGetData(stmt, i, SQL_C_CHAR, pszBuf, 50, &buflen);
 			Data = pszBuf;
-			delete[] pszBuf;
 			t.push_back(Data);
 		}
 		v.push_back(t);
