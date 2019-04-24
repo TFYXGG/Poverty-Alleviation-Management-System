@@ -9,7 +9,7 @@ public:
 	logic(IdataBase *db);
 
 	//µÇÂ½	µÇÂ½Ãû µÇÂ½ÃÜÂë
-	bool land(string nuerName, string passWorld);
+	bool land(string userName, string passWorld);
 
 	//¾°µã²éÑ¯
 	vector<vector<string>> sightseeing();
