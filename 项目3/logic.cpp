@@ -18,14 +18,14 @@ bool logic::land(string userName, string passWorld)
 vector<vector<string>> logic::sightseeing()
 {
 	stringstream ss;
-	ss << "select * from " << " 日汇总 " << " where 1=1";
+	ss << "select * from " << " 日汇总 ";
 	return db->query(ss.str());
 }
 
 bool logic::addAttractions(string name, float fare, string address)
 {
 	stringstream ss;
-	ss << "insert into 景点信息" << " values("<<"'"<< name <<" '"<<", "<<fare<<","<<"'"<<address<<"')";
+	ss << "insert into 景点信息" << " values(" << "'" << name << " '," << fare << "," << "'" << address << "')";
 	if (db->upData(ss.str()) != -1)
 		return true;
 	return false;
@@ -35,7 +35,7 @@ bool logic::modify(int id, string newName, float newFare, string newAddress)
 {	
 	stringstream ss;
 	ss << "update " << "景点信息" << "set";
-	ss << " newName " << " = " << newName << "," << " newFare " << " = " << newFare << " , " << " newAddress " << " = " << newAddress;
+	ss << " 名称 " << " = '" << newName << "'," << " 票价 " << " = " << newFare << " , " << " 地区 " << " = '" << newAddress << "'";
 	ss << " where " << " id " << " = " << id;
 	if (db->upData(ss.str()) != -1)
 		return true;
@@ -45,7 +45,7 @@ bool logic::modify(int id, string newName, float newFare, string newAddress)
 bool logic::remove(int id)
 {
 		stringstream ss;
-		ss << "delete from " << "景点信息" << " where " << id << " = " << id;
+		ss << "delete from " << "景点信息" << " where " << " id " << " = " << id;
 		if (db->upData(ss.str()) != -1)
 			return true;
 		return false;
