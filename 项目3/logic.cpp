@@ -7,7 +7,7 @@ logic::logic(IdataBase * db)
 	this->db = db;
 }
 
-bool logic::land(string nuerName, string passWorld)
+bool logic::land(string userName, string passWorld)
 {
 	return false;
 }
