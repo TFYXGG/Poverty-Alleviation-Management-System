@@ -53,6 +53,9 @@ bool logic::remove(int id)
 
 vector<vector<string>> logic::monthlySummary(string month)
 {
+	stringstream ss;
+	ss << " select * from ÔÂ»ã×Ü " << " where " << " month " << " = " << month;
+	return vector<vector<string>>();
 	return vector<vector<string>>();
 }
 
