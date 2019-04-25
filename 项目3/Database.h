@@ -19,6 +19,7 @@ public:
 	int upData(string sql);
 	~Database();
 private:
+	SQLHSTMT stmt;
 	HENV henv;
 	SQLHDBC hdbc;
 };
