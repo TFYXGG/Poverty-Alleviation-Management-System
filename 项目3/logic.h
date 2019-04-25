@@ -23,8 +23,8 @@ public:
 	//删除景点
 	bool remove(int id);
 
-	//月总概况
-	vector<vector<string>> monthlySummary(string month);
+	//总概况
+	vector<vector<string>> summary(int year = 0, int month = 0);
 
 	~logic();
 private:

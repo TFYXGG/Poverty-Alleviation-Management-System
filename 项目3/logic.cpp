@@ -1,6 +1,7 @@
 
 #include "logic.h"
-#include<sstream>
+#include <sstream>
+#include <ctime>
 
 logic::logic(IdataBase * db)
 {
@@ -26,35 +27,40 @@ bool logic::addAttractions(string name, float fare, string address)
 {
 	stringstream ss;
 	ss << "insert into 景点信息" << " values(" << "'" << name << " '," << fare << "," << "'" << address << "')";
-	if (db->upData(ss.str()) != -1)
-		return true;
-	return false;
+	return db->upData(ss.str()) != -1;
 }
 
 bool logic::modify(int id, string newName, float newFare, string newAddress)
 {	
 	stringstream ss;
-	ss << "update " << "景点信息" << "set";
+	ss << "update " << "景点信息 " << "set ";
 	ss << " 名称 " << " = '" << newName << "'," << " 票价 " << " = " << newFare << " , " << " 地区 " << " = '" << newAddress << "'";
 	ss << " where " << " id " << " = " << id;
-	if (db->upData(ss.str()) != -1)
-		return true;
-	return false;
+	return db->upData(ss.str()) != -1;
 }
 
 bool logic::remove(int id)
 {
 		stringstream ss;
 		ss << "delete from " << "景点信息" << " where " << " id " << " = " << id;
-		if (db->upData(ss.str()) != -1)
-			return true;
-		return false;
+		return db->upData(ss.str()) != -1;
 }
 
-vector<vector<string>> logic::monthlySummary(string month)
+vector<vector<string>> logic::summary(int year, int month)
 {
 	stringstream ss;
-	ss << " select * from 月汇总 " << " where " << " month " << " = " << month;
+	if (year&&month)
+	{
+		ss << "select * from 日汇总 where YEAR(日期) = " << year << "and MONTH(日期) = " << month;
+	}
+	else if (year)
+	{
+		ss << "select * from 月汇总 where 年 = " << year;
+	}
+	else
+	{
+		ss << "select * from 年汇总";
+	}
 	return db->query(ss.str());
 }
 

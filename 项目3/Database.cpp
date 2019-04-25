@@ -58,12 +58,11 @@ vector<vector<string>> Database::query(string sql)
 			pszBuf[0] = '/0';
 			SQLGetData(stmt, i, SQL_C_CHAR, pszBuf, 50, &buflen);
 			Data = pszBuf;
+			Data.erase(Data.find_last_not_of(" ") + 1);
 			t.push_back(Data);
 		}
 		v.push_back(t);
 	}
-	//ÊÍ·ÅÓï¾ä¾ä±ú
-	SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 	return v;
 }
 
@@ -78,7 +77,6 @@ int Database::upData(string sql)
 	rcode = SQLRowCount(stmt, &rowCount);
 	if (!(rcode == SQL_SUCCESS || rcode == SQL_SUCCESS_WITH_INFO))
 		return -1;
-	SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 	return rowCount;
 }
 
