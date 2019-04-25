@@ -19,7 +19,7 @@ bool logic::land(string userName, string passWorld)
 vector<vector<string>> logic::sightseeing()
 {
 	stringstream ss;
-	ss << "select * from " << " 日汇总 ";
+	ss << "select * from 日汇总 ORDER BY 名称,日期 desc";
 	return db->query(ss.str());
 }
 
@@ -51,15 +51,15 @@ vector<vector<string>> logic::summary(int year, int month)
 	stringstream ss;
 	if (year&&month)
 	{
-		ss << "select * from 日汇总 where YEAR(日期) = " << year << "and MONTH(日期) = " << month;
+		ss << "select * from 日汇总 where YEAR(日期) = " << year << "and MONTH(日期) = " << month <<" ORDER BY 名称, DAY(日期)";
 	}
 	else if (year)
 	{
-		ss << "select * from 月汇总 where 年 = " << year;
+		ss << "select * from 月汇总 where 年 = " << year << " ORDER BY 月";
 	}
 	else
 	{
-		ss << "select * from 年汇总";
+		ss << "select * from 年汇总" << " ORDER BY 名称, 年 DESC";
 	}
 	return db->query(ss.str());
 }
