@@ -3,7 +3,6 @@
 #include <Windows.h>
 #include <codecvt>
 #include <sstream>
-#include <sstream>
 
 std::vector<std::string> split(std::string str, std::string pattern)
 {
@@ -114,53 +113,6 @@ std::string string2Utf_8(std::string str)
 	for (int i = 0; i < s.length(); i++)
 	{
 		ss << "%" << std::hex << (int)uc[i];
-	}
-	return ss.str();
-}
-
-std::string reductionChinese(std::string str)
-{
-	std::stringstream ss;
-	for (int i = 0; i < str.length(); i++)
-	{
-		if (str.at(i) == '%')
-		{
-			std::stringstream st;
-			for (; i < str.length() - 2 && str.at(i) == '%'; i+=3)
-			{
-				st << str[i];
-				st << str[i + 1];
-				st << str[i + 2];
-			}
-			ss << utf_82String(st.str());
-		}
-		ss << str[i];
-	}
-	return ss.str();
-}
-
-std::string codingChinese(std::string str)
-{
-	std::stringstream ss;
-	for (int i = 0; i < str.length(); i++)
-	{
-		if (str[i] >= 0 && str[i] <= 127)
-		{
-			ss << str[i];
-		}
-		else
-		{
-			/*char buf[1024] = { 0 };
-			int j = 0;*/
-			std::stringstream st;
-			for (; i < str.length() && !(str[i] >= 0 && str[i] <= 127); i++)
-			{
-				//buf[j++] = str[i];
-				st << str[i];
-			}
-			ss << string2Utf_8(st.str());
-			i--;
-		}
 	}
 	return ss.str();
 }

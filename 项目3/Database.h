@@ -1,6 +1,5 @@
 #pragma once
 
-#define NDEBUG
 #include "IdataBase.h"
 #include <stdio.h>
 #include <assert.h>
@@ -21,4 +20,5 @@ public:
 private:
 	HENV henv;
 	SQLHDBC hdbc;
+	SQLHSTMT stmt;
 };

@@ -2,7 +2,7 @@
 #include <sstream>
 #include <iostream>
 
-Database::Database(string serverName, string userName, string passWorld):henv(NULL), hdbc(NULL)
+Database::Database(string serverName, string userName, string passWorld):henv(NULL), hdbc(NULL), stmt(NULL)
 {
 	SQLRETURN rcode;
 	// *) 申请环境句柄
@@ -18,36 +18,21 @@ Database::Database(string serverName, string userName, string passWorld):henv(NU
 	rcode = SQLConnect(hdbc, (SQLCHAR *)serverName.data(), serverName.length(),
 		(SQLCHAR *)userName.data(), userName.length(), (SQLCHAR *)passWorld.data(), passWorld.length());
 	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
+	// *) 分配语句句柄
+	rcode = SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &stmt);
+	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
 }
 
 vector<vector<string>> Database::query(string sql)
 {
-	// *) 分配语句句柄
-	SQLHSTMT stmt;
-	SQLRETURN rcode = SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &stmt);
-	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
-	if (!(rcode == SQL_SUCCESS || rcode == SQL_SUCCESS_WITH_INFO))
-	{
-		SQLFreeHandle(SQL_HANDLE_STMT, stmt);
-		return vector<vector<string>>();
-	}
 	//执行具体的sql
-	rcode = SQLExecDirect(stmt, (SQLCHAR*)sql.data(), sql.length());
+	SQLRETURN rcode = SQLExecDirect(stmt, (SQLCHAR*)sql.data(), sql.length());
 	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
-	if (!(rcode == SQL_SUCCESS || rcode == SQL_SUCCESS_WITH_INFO))
-	{
-		SQLFreeHandle(SQL_HANDLE_STMT, stmt);
-		return vector<vector<string>>();
-	}
 	//获取列的数目
 	SQLSMALLINT colCount = 0;
 	rcode = SQLNumResultCols(stmt, &colCount);
 	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
-	if (!(rcode == SQL_SUCCESS || rcode == SQL_SUCCESS_WITH_INFO))
-	{
-		SQLFreeHandle(SQL_HANDLE_STMT, stmt);
-		return vector<vector<string>>();
-	}
+
 	SQLLEN colLen = 0;
 	SQLSMALLINT buf_len = 0;
 	SQLLEN colType = 0;
@@ -78,41 +63,26 @@ vector<vector<string>> Database::query(string sql)
 		}
 		v.push_back(t);
 	}
-	SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 	return v;
 }
 
 int Database::upData(string sql)
 {
-	// *) 分配语句句柄
-	SQLHSTMT stmt;
-	SQLRETURN rcode = SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &stmt);
 	if (sql.empty())
-	{
-		SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 		return -1;
-	}
-	rcode = SQLExecDirect(stmt, (SQLCHAR*)sql.data(), sql.length());
-	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
+	SQLRETURN rcode = SQLExecDirect(stmt, (SQLCHAR*)sql.data(), sql.length());
 	if (!(rcode== SQL_SUCCESS|| rcode == SQL_SUCCESS_WITH_INFO))
-	{
-		SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 		return -1;
-	}
 	SQLLEN rowCount = 0;
 	rcode = SQLRowCount(stmt, &rowCount);
-	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
 	if (!(rcode == SQL_SUCCESS || rcode == SQL_SUCCESS_WITH_INFO))
-	{
-		SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 		return -1;
-	}
-	SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 	return rowCount;
 }
 
 Database::~Database()
 {
+	SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 	SQLDisconnect(hdbc);
 	SQLFreeHandle(SQL_HANDLE_DBC, hdbc);
 	SQLFreeHandle(SQL_HANDLE_ENV, henv);
