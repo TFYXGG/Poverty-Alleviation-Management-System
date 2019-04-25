@@ -21,3 +21,9 @@ std::string utf_82String(std::string str);
 
 //单字符转UTF-8编码（%间隔）
 std::string string2Utf_8(std::string str);
+
+//还原中文等特殊字符
+std::string reductionChinese(std::string str);
+
+//对中文进行编码
+std::string codingChinese(std::string str);
