@@ -1,0 +1,67 @@
+﻿* {
+margin:0px;
+padding:0px;
+}
+#main {
+position:absolute;
+top:0px;
+width:100%;
+}
+#wap {
+position:relative;
+width:1050px;
+height:526px;
+margin:130px auto 0;
+/*background-color:aqua;*/
+}
+#wap .login {
+    width:370px;
+    height:526px;
+    background-color:white;
+   float:right;
+}
+.log-top{
+    text-align:center;
+    line-height:80px;
+    font-size:24px;
+
+}
+a {
+color:crimson;
+text-decoration:none;
+}
+span{
+    margin:auto 10px;
+}
+.other {
+font-size:13px;
+color:#343030;
+}
+.text{
+    display:block;
+    width:300px;
+    height:22px;
+    margin:10px auto;
+    padding:13px 16px 13px 14px;
+}
+.submit {
+    display:block;
+    width:330px;
+    height:50px;
+    font-size:17px;
+    color:white;
+    margin:10px auto;
+    border:0px;
+    background-color:#ff6a00;
+}#remark{
+     display:block;
+     text-align:center;
+     width:300px;
+     height:10px;
+     margin:10px auto;
+     font-size:12px;
+     color:#423a3a;
+ }
+.rem {
+    color:darkgray;
+}
