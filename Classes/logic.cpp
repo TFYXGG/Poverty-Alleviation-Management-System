@@ -2,6 +2,7 @@
 #include "logic.h"
 #include <sstream>
 #include <ctime>
+#include <iomanip>
 
 logic::logic(IdataBase * db)
 {
@@ -46,22 +47,31 @@ bool logic::remove(int id)
 		return db->upData(ss.str()) != -1;
 }
 
-vector<vector<string>> logic::summary(int year, int month)
+vector<vector<string>> logic::summary(int year, int month,int day)
 {
 	stringstream ss;
-	if (year&&month)
+	if (!year)
 	{
-		ss << "select * from 日汇总 where YEAR(日期) = " << year << "and MONTH(日期) = " << month <<" ORDER BY 名称, DAY(日期)";
+		ss << "select * from 日汇总 order by 名称, 日期 desc";
 	}
-	else if (year)
+	else if (!month)
 	{
-		ss << "select * from 月汇总 where 年 = " << year << " ORDER BY 月";
+		ss << "select * from 年汇总 where 日期 = '" << year << "'";
+	}
+	else if (!day)
+	{
+		ss << "select *from 月汇总 where 日期 = '" << year << "-" << setw(2) << setfill('0') << month << "'";
 	}
 	else
 	{
-		ss << "select * from 年汇总" << " ORDER BY 名称, 年 DESC";
+		ss << "select * from 日汇总 where 日期 = '" << year << "-" << month << "-" << day << "'";
 	}
 	return db->query(ss.str());
+}
+
+vector<vector<string>> logic::attractionsInformation()
+{
+	return db->query("select * from 景点信息");
 }
 
 logic::~logic()

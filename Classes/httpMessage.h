@@ -15,13 +15,13 @@ public:
 	//获取URL
 	const std::string& getURL()const;
 	//获取指定的URL参数
-	const std::string& getParameter(std::string key) const throw(std::out_of_range);
+	const std::string& getParameter(std::string key) const/* throw(std::out_of_range)*/;
 	//获取所有URL参数 以键值对方式返回
 	const std::map<std::string, std::string>& getParameter()const;
 	//获取协议版本
 	const std::string& getVersion()const;
 	//获取消息头部指定信息
-	const std::string& getHeaders(const std::string key)const throw(std::out_of_range);
+	const std::string& getHeaders(const std::string key)const/* throw(std::out_of_range)*/;
 	//获取消息头部所有信息
 	const std::map<std::string, std::string>&getHeaders()const;
 	//获取消息主体

@@ -179,8 +179,8 @@ std::string string2Utf_8(std::string str)
 	char *srcstart = inbuf;
 	char *tempoutbuf = outbuf;
 	auto stream = iconv_open("UTF8", "GBK");
-	auto srclen = str.length();
-	auto outlen = 1024ull;
+	size_t srclen = str.length();
+	size_t outlen = 1024;
 	size_t ret = iconv(stream, &srcstart, &srclen, &tempoutbuf, &outlen);
 	if (ret == -1)
 	{
@@ -246,3 +246,47 @@ std::string codingChinese(std::string str)
 	}
 	return ss.str();
 }
+
+
+std::string U2G(std::string utf8)
+{
+#ifdef WINDOWS
+	int len = MultiByteToWideChar(CP_UTF8, 0, utf8.data(), -1, NULL, 0);
+	wchar_t* wstr = new wchar_t[len + 1];
+	memset(wstr, 0, len + 1);
+	MultiByteToWideChar(CP_UTF8, 0, utf8.data(), -1, wstr, len);
+	len = WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
+	char* str = new char[len + 1];
+	memset(str, 0, len + 1);
+	WideCharToMultiByte(CP_ACP, 0, wstr, -1, str, len, NULL, NULL);
+	if (wstr) delete[] wstr;
+	std::string s = str;
+	delete[] str;
+	return s;
+#endif // WINDOWS
+#ifdef LINUX
+	
+#endif // LINUX
+}
+
+std::string G2U(std::string gb2312)
+{
+#ifdef WINDOWS
+	int len = MultiByteToWideChar(CP_ACP, 0, gb2312.data(), -1, NULL, 0);
+	wchar_t* wstr = new wchar_t[len + 1];
+	memset(wstr, 0, len + 1);
+	MultiByteToWideChar(CP_ACP, 0, gb2312.data(), -1, wstr, len);
+	len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
+	char* str = new char[len + 1];
+	memset(str, 0, len + 1);
+	WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, len, NULL, NULL);
+	if (wstr) delete[] wstr;
+	std::string s = str;
+	delete[] str;
+	return s;
+#endif // WINDOWS
+#ifdef LINUX
+
+#endif // LINUX
+}
+

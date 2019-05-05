@@ -23,7 +23,10 @@ public:
 	bool remove(int id);
 
 	//总概况
-	vector<vector<string>> summary(int year = 0, int month = 0);
+	vector<vector<string>> summary(int year = 0, int month = 0, int day = 0);
+
+	//景点信息查询
+	vector<vector<string>> attractionsInformation();
 
 	~logic();
 private:

@@ -2,6 +2,7 @@
 #include "httpMessage.h"
 #include "socket.h"
 #include <thread>
+#include "util.h"
 
 template <class T>
 class MessageHandle
@@ -166,6 +167,8 @@ void HandleThread::onDefaultHttp()
 	else if (method == "POST")
 	{
 		//对POST请求处理
+		pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::not_found));
+		pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::not_found));
 	}
 	else
 	{

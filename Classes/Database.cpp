@@ -2,6 +2,7 @@
 #include <sstream>
 #include <iostream>
 
+
 Database::Database(string serverName, string userName, string passWorld) :henv(NULL), hdbc(NULL)
 {
 	SQLRETURN rcode;
@@ -70,7 +71,7 @@ vector<vector<string>> Database::query(string sql)
 			SQLColAttribute(stmt, i, SQL_DESC_NAME, sz_buf, 256, &buf_len, 0);
 			SQLColAttribute(stmt, i, SQL_DESC_TYPE, 0, 0, 0, &colType);
 			//SQLColAttribute(stmt, i, SQL_DESC_LENGTH, NULL, 0, 0, &colLen);
-			pszBuf[0] = '/0';
+			pszBuf[0] = '\0';
 			SQLGetData(stmt, i, SQL_C_CHAR, pszBuf, 50, &buflen);
 			Data = pszBuf;
 			Data.erase(Data.find_last_not_of(" ") + 1);
