@@ -265,7 +265,21 @@ std::string U2G(std::string utf8)
 	return s;
 #endif // WINDOWS
 #ifdef LINUX
-	
+	auto stream = iconv_open("GBK", "UTF8");
+	char *input = new char[utf8.length() + 1]{ 0 };
+	char *output = new char[utf8.length() * 2]{ 0 };
+	strcpy(input, utf8.data());
+	char *srcstart = input;
+	size_t srclen = utf8.length();
+	char *tempoutbuf = output;
+	size_t outlen = utf8.length() * 2;
+	size_t ret = iconv(stream, &srcstart, &srclen, &tempoutbuf, &outlen);
+	if (ret == -1)
+		return "";
+	std::string str(output);
+	delete[] output;
+	delete[] input;
+	return str;
 #endif // LINUX
 }
 
@@ -286,7 +300,21 @@ std::string G2U(std::string gb2312)
 	return s;
 #endif // WINDOWS
 #ifdef LINUX
-
+	auto stream = iconv_open("UTF8", "GBK");
+	char *input = new char[gb2312.length() + 1]{ 0 };
+	char *output = new char[gb2312.length() + 1]{ 0 };
+	strcpy(input, gb2312.data());
+	char *srcstart = input;
+	size_t srclen = gb2312.length();
+	char *tempoutbuf = output;
+	size_t outlen = gb2312.length();
+	size_t ret = iconv(stream, &srcstart, &srclen, &tempoutbuf, &outlen);
+	if (ret == -1)
+		return "";
+	std::string str(output);
+	delete[] output;
+	delete[] input;
+	return str;
 #endif // LINUX
 }
 
