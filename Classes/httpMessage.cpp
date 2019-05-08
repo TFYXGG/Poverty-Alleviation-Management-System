@@ -7,8 +7,6 @@
 #include <cstring>
 
 
-
-
 RequestMessage::RequestMessage(char * message, int len):entityBody(nullptr)
 {
 	//°´»»ÐÐ·û·Ö¸î
