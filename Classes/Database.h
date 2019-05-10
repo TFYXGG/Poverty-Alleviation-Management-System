@@ -1,7 +1,8 @@
 #pragma once
-
 #include "IdataBase.h"
 #include <stdio.h>
+
+//#define NDEBUG
 #include <assert.h>
 
 #ifdef WINDOWS

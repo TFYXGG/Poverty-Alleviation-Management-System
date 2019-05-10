@@ -23,7 +23,7 @@ public:
 			std::string URL = pRequest->getURL();
 			if (URL == "/")	//ÇëÇóÖ÷Ò³
 			{
-				pResponse->openFileSetBody(root + "\\index.html");
+				pResponse->openFileSetBody(root + "/index.html");
 				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setVersion("HTTP/1.1");
@@ -210,7 +210,7 @@ public:
 
 int main()
 {
-	PovertyAlleviationManagementSystem::setRoot(R"(..\Resource\dist)");
+	PovertyAlleviationManagementSystem::setRoot(R"(../Resource/dist)");
 	MessageHandle<PovertyAlleviationManagementSystem> mh(3000);
 	mh();
 	return 0;

@@ -3,7 +3,6 @@
 #include <vector>
 #include <map>
 #include <iostream>
-//#include "MessageHandle.h"
 
 class RequestMessage	//ÇëÇó±¨ÎÄ
 {

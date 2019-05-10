@@ -28,7 +28,8 @@ bool logic::addAttractions(string name, float fare, string address)
 {
 	stringstream ss;
 	ss << "insert into ¾°µãÐÅÏ¢" << " values(" << "'" << name << " '," << fare << "," << "'" << address << "')";
-	return db->upData(ss.str()) != -1;
+	auto b = db->upData(ss.str());
+	return b != -1 && b != 0;
 }
 
 bool logic::modify(int id, string newName, float newFare, string newAddress)
