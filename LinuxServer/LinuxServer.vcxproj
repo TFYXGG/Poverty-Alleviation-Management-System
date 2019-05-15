@@ -37,6 +37,7 @@
   <ItemGroup>
     <ClCompile Include="..\Classes\Database.cpp" />
     <ClCompile Include="..\Classes\httpMessage.cpp" />
+    <ClCompile Include="..\Classes\json.cpp" />
     <ClCompile Include="..\Classes\logic.cpp" />
     <ClCompile Include="..\Classes\main.cpp" />
     <ClCompile Include="..\Classes\socket.cpp" />
@@ -46,6 +47,7 @@
     <ClInclude Include="..\Classes\Database.h" />
     <ClInclude Include="..\Classes\httpMessage.h" />
     <ClInclude Include="..\Classes\IdataBase.h" />
+    <ClInclude Include="..\Classes\json.h" />
     <ClInclude Include="..\Classes\logic.h" />
     <ClInclude Include="..\Classes\MessageHandle.hpp" />
     <ClInclude Include="..\Classes\socket.h" />

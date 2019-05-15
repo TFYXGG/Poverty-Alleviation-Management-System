@@ -2,7 +2,7 @@
 #include "IdataBase.h"
 #include <stdio.h>
 
-//#define NDEBUG
+#define NDEBUG
 #include <assert.h>
 
 #ifdef WINDOWS

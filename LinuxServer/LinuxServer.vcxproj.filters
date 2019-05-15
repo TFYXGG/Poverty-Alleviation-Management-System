@@ -19,6 +19,9 @@
     <ClCompile Include="..\Classes\util.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\json.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\Database.h">
@@ -40,6 +43,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\util.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\json.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

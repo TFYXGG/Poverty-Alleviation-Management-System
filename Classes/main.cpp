@@ -8,6 +8,10 @@
 
 using namespace std;
 
+const string dsnName = "fpglxt";
+const string userName = "sa";
+const string passWord = "1019334418Zz";
+
 class PovertyAlleviationManagementSystem:public HandleThread
 {
 public:
@@ -32,7 +36,7 @@ public:
 			}
 			else if (URL == "/getviewlistinfo")
 			{
-				logic lg(new Database("fpglxt", "sa", "1019334418Zz"));
+				logic lg(new Database(dsnName, userName, passWord));
 				auto p = lg.attractionsInformation();
 				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
@@ -70,7 +74,7 @@ public:
 				body.erase(body.length() - 1, 1);
 				body.erase(std::remove(body.begin(), body.end(), '"'), body.end());	
 				auto mv = strToMap(body, ",", ":");	
-				logic lg(new Database("fpglxt", "sa", "1019334418Zz"));
+				logic lg(new Database(dsnName, userName, passWord));
 				if (lg.addAttractions(mv.at("name"), atof(mv.at("price").data()), mv.at("area")))
 					pResponse->setBody("true", sizeof("true"));
 				else
@@ -86,7 +90,7 @@ public:
 				int n = 0;
 				body = U2G(body);
 				sscanf(body.data(), "{\"id\":%d}", &n);
-				logic lg(new Database("fpglxt", "sa", "1019334418Zz"));
+				logic lg(new Database(dsnName, userName, passWord));
 				if(lg.remove(n))
 					pResponse->setBody("true", sizeof("true"));
 				else
@@ -104,7 +108,7 @@ public:
 				body.erase(body.length() - 1, 1);
 				body.erase(std::remove(body.begin(), body.end(), '"'), body.end());
 				auto mv = strToMap(body, ",", ":");
-				logic lg(new Database("fpglxt", "sa", "1019334418Zz"));
+				logic lg(new Database(dsnName, userName, passWord));
 				if(lg.modify(atoi(mv["id"].data()), mv["name"], atof(mv["fare"].data()), mv["address"]))
 					pResponse->setBody("true", sizeof("true"));
 				else
@@ -148,7 +152,7 @@ public:
 				{
 					day = atoi(sDay.data());
 				}
-				logic lg(new Database("fpglxt", "sa", "1019334418Zz"));
+				logic lg(new Database(dsnName, userName, passWord));
 				auto im = lg.summary(year, month, day);
 				stringstream ss;
 				ss << "{\n\"x\":[";
@@ -185,7 +189,7 @@ public:
 				body.erase(body.length() - 1, 1);
 				body.erase(std::remove(body.begin(), body.end(), '"'), body.end());
 				auto user = strToMap(body, ",", ":");
-				logic lg(new Database("fpglxt", "sa", "1019334418Zz"));
+				logic lg(new Database(dsnName, userName, passWord));
 				if (lg.land(user["username"], user["password"]))
 				{
 					string s = "\xef\xbb\xbf{\"x\":\"true\"}";

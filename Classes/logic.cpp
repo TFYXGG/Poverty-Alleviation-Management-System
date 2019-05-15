@@ -27,7 +27,7 @@ vector<vector<string>> logic::sightseeing()
 bool logic::addAttractions(string name, float fare, string address)
 {
 	stringstream ss;
-	ss << "insert into 景点信息" << " values(" << "'" << name << " '," << fare << "," << "'" << address << "')";
+	ss << "insert into 景点信息" << " (名称,票价,地区) values (" << "'" << name << " '," << fare << "," << "'" << address << "')";
 	auto b = db->upData(ss.str());
 	return b != -1 && b != 0;
 }
@@ -61,11 +61,11 @@ vector<vector<string>> logic::summary(int year, int month,int day)
 	}
 	else if (!day)
 	{
-		ss << "select *from 月汇总 where 日期 = '" << year << "-" << setw(2) << setfill('0') << month << "'";
+		ss << "select * from 月汇总 where 日期 = '" << year << "-" << setw(2) << setfill('0') << month << "'";
 	}
 	else
 	{
-		ss << "select * from 日汇总 where 日期 = '" << year << "-" << month << "-" << day << "'";
+		ss << "select * from 日汇总 where 日期 = '" << year << "-" << setw(2) << setfill('0') << month << "-" << setw(2) << setfill('0') << day << "'";
 	}
 	return db->query(ss.str());
 }
