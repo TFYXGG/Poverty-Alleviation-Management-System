@@ -1,5 +1,4 @@
 
-
 #include <iostream>
 #include <string>
 #include <vector>
@@ -44,13 +43,6 @@ namespace Json
 		numVal(const std::string &str);
 		numVal(const std::string &str, int &index);
 		virtual std::string toJsonString() override;
-		template<typename T>
-		T& getCppValue(T &t)
-		{
-			std::stringstream strstream(str);
-			strstream >> t;
-			return t;
-		}
 		float getFloat();
 		double getDouble();
 		int getInt();

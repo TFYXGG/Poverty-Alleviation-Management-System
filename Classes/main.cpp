@@ -4,7 +4,6 @@
 #include "Database.h"
 #include <sstream>
 #include "util.h"
-#include <algorithm>
 #include "json.h"
 
 using namespace std;

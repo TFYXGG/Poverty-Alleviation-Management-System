@@ -93,8 +93,10 @@ float Json::numVal::getFloat()
 
 double Json::numVal::getDouble()
 {
+	std::stringstream strstream(str);
 	double d;
-	return getCppValue(d);
+	strstream >> d;
+	return d;
 }
 
 int Json::numVal::getInt()
