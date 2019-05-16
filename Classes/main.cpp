@@ -5,6 +5,7 @@
 #include <sstream>
 #include "util.h"
 #include <algorithm>
+#include "json.h"
 
 using namespace std;
 
@@ -41,25 +42,22 @@ public:
 				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setVersion("HTTP/1.1");
-				stringstream ss;
-				ss << "{\n\"x\":[";
+				Json::json json;
+				auto obj = new Json::object;
+				auto arr = new Json::array;
+				json.setRoot(obj);
+				obj->add("x", arr);
 				for (int i = 0; i < p.size(); i++)
 				{
-					ss << "{"
-						<< "\"id\":" << p[i][0] << ","
-						<< "\"name\":" << "\"" << G2U(p[i][1]) << "\""<< ","
-						<< "\"fare\":" << p[i][2] << ","
-						<< "\"address\":" << "\"" << G2U(p[i][3]) << "\""
-						<< "}";
-					if (i < p.size() - 1)
-					{
-						ss << ",\n";
-					}
+					auto tobj = new Json::object;
+					tobj->add("id", new Json::numVal(p[i][0]));
+					tobj->add("name", new Json::strVal((p[i][1])));
+					tobj->add("fare", new Json::numVal(p[i][2]));
+					tobj->add("address", new Json::strVal((p[i][3])));
+					arr->push_back(tobj);
 				}
 				pResponse->setHeaders("Content-Type", "text/json");
-				ss << "]\n}";
-				//utf8ǰ׺\xef\xbb\xbf
-				pResponse->setBody(("\xef\xbb\xbf"+ss.str()).data(), ("\xef\xbb\xbf" + ss.str()).length());
+				pResponse->setBody(json.toJsonFile().data(), json.toJsonFile().length());
 				return true;
 			}
 		}
@@ -69,13 +67,11 @@ public:
 			if (URL == "/addviewinfo")
 			{
 				string body(pRequest->getBody(), atoi(pRequest->getHeaders("Content-Length").data()));
-				body = U2G(body);
-				body.erase(0, 1);
-				body.erase(body.length() - 1, 1);
-				body.erase(std::remove(body.begin(), body.end(), '"'), body.end());	
-				auto mv = strToMap(body, ",", ":");	
+				Json::json j(body, "UTF8");
+				auto root = j.getRoot();	
 				logic lg(new Database(dsnName, userName, passWord));
-				if (lg.addAttractions(mv.at("name"), atof(mv.at("price").data()), mv.at("area")))
+				float price = 0.0;
+				if(lg.addAttractions(((Json::strVal*)(root->at("name")))->getCppString(), ((Json::numVal*)(root->at("price")))->getFloat(), ((Json::strVal*)(root->at("area")))->getCppString()))
 					pResponse->setBody("true", sizeof("true"));
 				else
 					pResponse->setBody("false", sizeof("false"));
@@ -87,11 +83,9 @@ public:
 			else if (URL == "/deleteviewinfo")
 			{
 				string body(pRequest->getBody(),atoi(pRequest->getHeaders("Content-Length").data()));
-				int n = 0;
-				body = U2G(body);
-				sscanf(body.data(), "{\"id\":%d}", &n);
+				Json::json j(body, "UTF8");
 				logic lg(new Database(dsnName, userName, passWord));
-				if(lg.remove(n))
+				if(lg.remove(((Json::numVal *)(j.getRoot()->at("id")))->getInt()))
 					pResponse->setBody("true", sizeof("true"));
 				else
 					pResponse->setBody("false", sizeof("false"));
@@ -103,13 +97,9 @@ public:
 			else if (URL == "/updateviewinfo")
 			{
 				string body(pRequest->getBody(), atoi(pRequest->getHeaders("Content-Length").data()));
-				body = U2G(body);
-				body.erase(0, 1);
-				body.erase(body.length() - 1, 1);
-				body.erase(std::remove(body.begin(), body.end(), '"'), body.end());
-				auto mv = strToMap(body, ",", ":");
+				Json::json j(body, "UTF-8");
 				logic lg(new Database(dsnName, userName, passWord));
-				if(lg.modify(atoi(mv["id"].data()), mv["name"], atof(mv["fare"].data()), mv["address"]))
+				if(lg.modify(((Json::numVal*)(j.getRoot()->at("id")))->getInt(), ((Json::strVal*)(j.getRoot()->at("name")))->getCppString(), ((Json::numVal*)(j.getRoot()->at("fare")))->getFloat(), ((Json::strVal*)(j.getRoot()->at("id")))->getCppString()))
 					pResponse->setBody("true", sizeof("true"));
 				else
 					pResponse->setBody("false", sizeof("false"));
@@ -121,12 +111,9 @@ public:
 			else if (URL == "/getallviewlistinfo")
 			{
 				string body(pRequest->getBody(), atoi(pRequest->getHeaders("Content-Length").data()));
-				body.erase(std::remove(body.begin(), body.end(), '"'), body.end());
-				body.erase(0, 1);
-				body.erase(body.length() - 1, 1);
-				body.erase(std::remove(body.begin(), body.end(), '"'), body.end());
+				Json::json j(body,"UTF8");
+				std::string date = ((Json::strVal*)(j.getRoot()->at("date")))->getCppString();
 				int year = 0, month = 0, day = 0;
-				auto date = split(body, ":").at(1);
 				string sYear, sMonth, sDay;
 				for (int i = 0; i < date.length() && i < 4; i++)
 				{
@@ -154,28 +141,25 @@ public:
 				}
 				logic lg(new Database(dsnName, userName, passWord));
 				auto im = lg.summary(year, month, day);
-				stringstream ss;
-				ss << "{\n\"x\":[";
+				Json::json ResJson;
+				Json::object *root = new Json::object;
+				Json::array *a = new Json::array;
+				ResJson.setRoot(root);
+				root->add("x", a);
 				for (int i = 0; i < im.size(); i++)
 				{
-					ss << "{"
-						<< "\"name\":\"" << G2U(im[i][0]) << "\","
-						<< "\"date\":" << "\"" << G2U(im[i][1]) << "\"" << ","
-						<< "\"fare\":" << im[i][2] << ","
-						<< "\"total_number_of_visitors\":" << im[i][3] << ","
-						<< "\"full_ticket\":" << im[i][4]<<","
-						<<"\"discount\":"<<im[i][5]<<","
-						<<"\"donation\":"<<im[i][6]
-						<< "}";
-					if (i < im.size() - 1)
-					{
-						ss << ",\n";
-					}
+					Json::object *tobj = new Json::object;
+					tobj->add("name", new Json::strVal(im[i][0]));
+					tobj->add("date", new Json::strVal(im[i][1]));
+					tobj->add("fare", new Json::numVal(im[i][2]));
+					tobj->add("total_number_of_visitors", new Json::numVal(im[i][3]));
+					tobj->add("full_ticket", new Json::numVal(im[i][4]));
+					tobj->add("discount", new Json::numVal(im[i][5]));
+					tobj->add("donation", new Json::numVal(im[i][6]));
+					a->push_back(tobj);
 				}
 				pResponse->setHeaders("Content-Type", "text/json");
-				ss << "]\n}";
-				//utf8ǰ׺\xef\xbb\xbf
-				pResponse->setBody(("\xef\xbb\xbf" + ss.str()).data(), ("\xef\xbb\xbf" + ss.str()).length());
+				pResponse->setBody(ResJson.toJsonFile().data(), ResJson.toJsonFile().length());
 				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setVersion("HTTP/1.1");
@@ -184,21 +168,19 @@ public:
 			else if (URL == "/login")
 			{
 				string body(pRequest->getBody(), atoi(pRequest->getHeaders("Content-Length").data()));
-				body.erase(std::remove(body.begin(), body.end(), '"'), body.end());
-				body.erase(0, 1);
-				body.erase(body.length() - 1, 1);
-				body.erase(std::remove(body.begin(), body.end(), '"'), body.end());
-				auto user = strToMap(body, ",", ":");
+				Json::json j(body, "UTF8");
 				logic lg(new Database(dsnName, userName, passWord));
-				if (lg.land(user["username"], user["password"]))
+				Json::object *obj;
+				Json::json res(obj);
+				if (lg.land(((Json::strVal*)(j.getRoot()->at("username")))->getCppString(),((Json::strVal*)(j.getRoot()->at("password")))->getCppString()))
 				{
-					string s = "\xef\xbb\xbf{\"x\":\"true\"}";
-					pResponse->setBody(s.data(),s.length());
+					obj->add("x", new Json::strVal("true"));
+					pResponse->setBody(res.toJsonFile().data(), res.toJsonFile().length());
 				}
 				else
 				{
-					string s = "\xef\xbb\xbf{\"x\":\"false\"}";
-					pResponse->setBody(s.data(), s.length());
+					obj->add("x", new Json::strVal("false"));
+					pResponse->setBody(res.toJsonFile().data(), res.toJsonFile().length());
 				}
 				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));

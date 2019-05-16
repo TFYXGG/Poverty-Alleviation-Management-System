@@ -1,6 +1,7 @@
 #include "json.h"
 #include <sstream>
 #include <algorithm>
+#include "util.h"
 
 
 namespace Json
@@ -56,6 +57,10 @@ std::string Json::strVal::getCppString()
 	return str;
 }
 
+Json::numVal::numVal(const std::string & str):str(str)
+{
+}
+
 Json::numVal::numVal(const std::string & str, int & index)
 {
 	std::stringstream strstream;
@@ -81,6 +86,42 @@ std::string Json::numVal::toJsonString()
 	return str;
 }
 
+float Json::numVal::getFloat()
+{
+	return atof(str.data());
+}
+
+double Json::numVal::getDouble()
+{
+	double d;
+	return getCppValue(d);
+}
+
+int Json::numVal::getInt()
+{
+	return atoi(str.data());
+}
+
+std::string Json::numVal::getString()
+{
+	return str;
+}
+
+char Json::numVal::getChar()
+{
+	return str.at(0);
+}
+
+bool Json::numVal::getBool()
+{
+	if (compareNoCase("true", str))
+		return true;
+	return false;
+}
+
+Json::object::object()
+{}
+
 Json::object::object(const std::string & str, int & index)
 {
 	if (str.at(index) != '{')
@@ -97,6 +138,11 @@ Json::object::object(const std::string & str, int & index)
 		if (str.at(index++) == '}')
 			return;
 	}
+}
+
+void Json::object::add(std::string key, value *val)
+{
+	this->insert(map::value_type(new strVal(key), val));
 }
 
 std::string Json::object::toJsonString()
@@ -125,6 +171,10 @@ Json::object::~object()
 		delete it->first;
 		delete it->second;
 	}
+}
+
+Json::array::array()
+{
 }
 
 Json::array::array(const std::string & str, int & index)
@@ -168,14 +218,26 @@ Json::array::~array()
 	}
 }
 
-Json::json::json(const std::string &jsonText):obj(nullptr)
+Json::json::json()
+{
+}
+
+Json::json::json(const std::string &jsonText, std::string encoding):obj(nullptr)
 {
 	int index = 0;
-	std::string str(jsonText);
+	std::string str;
+	if (encoding == "GBK")
+		str = jsonText;
+	else if (encoding == "UTF8" || encoding == "UTF-8")
+		str = U2G(jsonText);
 	str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
 	str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
 	str.erase(std::remove(str.begin(), str.end(), '\t'), str.end());
 	obj = new object(str, index);
+}
+
+Json::json::json(object * obj):obj(obj)
+{
 }
 
 Json::object * Json::json::getRoot()
@@ -183,9 +245,27 @@ Json::object * Json::json::getRoot()
 	return obj;
 }
 
+void Json::json::setRoot(object * Root)
+{
+	obj = Root;
+}
+
 std::string Json::json::toJsonString()
 {
 	return obj->toJsonString();
 }
 
-Json::jsonException::jsonException(char const * const _Message):exception(_Message){}
+std::string Json::json::toJsonFile(std::string encoding)
+{
+	if (encoding == "GBK")
+		return "\xef\xbb\xbf" + G2U(toJsonString());
+	if (encoding == "UTF8" || encoding == "UTF-8")
+		return "\xef\xbb\xbf" + toJsonString();
+}
+
+Json::jsonException::jsonException(char const * const _Message):errorMessage(_Message){}
+
+const char * Json::jsonException::what() const throw()
+{
+	return errorMessage.data();
+}

@@ -25,7 +25,7 @@ public:
 	//总概况
 	vector<vector<string>> summary(int year = 0, int month = 0, int day = 0);
 
-	//景点信息查询
+	//景点信息
 	vector<vector<string>> attractionsInformation();
 
 	~logic();

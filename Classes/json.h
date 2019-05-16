@@ -12,6 +12,9 @@ namespace Json
 	{	
 	public:
 		jsonException(char const* const _Message);
+		const char* what()const throw() override;
+	private:
+		std::string errorMessage;
 	};
 
 	class value
@@ -38,6 +41,7 @@ namespace Json
 	class numVal :public value
 	{
 	public:
+		numVal(const std::string &str);
 		numVal(const std::string &str, int &index);
 		virtual std::string toJsonString() override;
 		template<typename T>
@@ -47,6 +51,12 @@ namespace Json
 			strstream >> t;
 			return t;
 		}
+		float getFloat();
+		double getDouble();
+		int getInt();
+		std::string getString();
+		char getChar();
+		bool getBool();
 	private:
 		std::string str;
 	};
@@ -61,7 +71,9 @@ namespace Json
 	class object :public value,public std::map<strVal*,value*,ptrCmp>
 	{
 	public:
+		object();
 		object(const std::string &str, int &index);
+		void add(std::string key,value *val);
 		virtual std::string toJsonString() override;
 		value* at(std::string key);
 		virtual ~object() override;
@@ -71,6 +83,7 @@ namespace Json
 	class array :public value, public std::vector<value*>
 	{
 	public:
+		array();
 		array(const std::string &str, int &index);
 		virtual std::string toJsonString() override;
 		virtual ~array() override;
@@ -79,9 +92,13 @@ namespace Json
 	class json
 	{
 	public:
-		json(const std::string &jsonText);
+		json();
+		json(const std::string &jsonText,std::string encoding = "GBK");
+		json(object *obj);
 		std::string toJsonString();
+		std::string toJsonFile(std::string encoding = "GBK");
 		object * getRoot();
+		void setRoot(object *Root);
 	private:
 		object *obj;
 	};
