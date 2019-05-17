@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include "MessageHandle.hpp"
 #include "logic.h"
@@ -19,8 +20,6 @@ public:
 	bool onHttp()
 	{
 		std::string method = pRequest->getMethod();
-		//cout << "线程:" << this_thread::get_id() << "收到了一个" << method << "请求" << endl;
-		//cout << "URL:" << pRequest->getURL() << endl;
 		if (method == "GET")
 		{
 			//对GET请求的处理
@@ -191,7 +190,6 @@ public:
 		return false;
 	}
 };
-
 
 int main()
 {

@@ -1,3 +1,4 @@
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -88,9 +89,10 @@ namespace Json
 		json(const std::string &jsonText,std::string encoding = "GBK");
 		json(object *obj);
 		std::string toJsonString();
-		std::string toJsonFile(std::string encoding = "GBK");
+		std::string toJsonFile(std::string encoding = "UTF8");
 		object * getRoot();
 		void setRoot(object *Root);
+		~json();
 	private:
 		object *obj;
 	};

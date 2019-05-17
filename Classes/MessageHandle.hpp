@@ -103,7 +103,7 @@ void HandleThread::run()
 {
 	//暂时未实现长链接功能
 	char buf[BufSizeMax];
-	s->setRcvTimeO(1000 * 60 * 60);		//设置超时时间1小时
+	s->setRcvTimeO(1000 * 60);		//设置超时时间1分钟
 	do {
 		if (pResponse != nullptr)
 		{
@@ -130,13 +130,13 @@ void HandleThread::run()
 		}
 		catch (...)
 		{
-			//std::cout << "无法解析的消息" << std::endl;
 			pResponse->setVersion("HTTP/1.1");
 			pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::not_found));
 			pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::not_found));
 			sendResponseMessage();
 		}
 	} while (compareNoCase(pRequest->getHeaders("Connection"), "Keep-Alive"));
+	//不能在析构中释放（不能修改）
 	if (s != nullptr)
 	{
 		this->s->Close();

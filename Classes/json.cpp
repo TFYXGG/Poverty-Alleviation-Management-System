@@ -252,6 +252,11 @@ void Json::json::setRoot(object * Root)
 	obj = Root;
 }
 
+Json::json::~json()
+{
+	delete obj;
+}
+
 std::string Json::json::toJsonString()
 {
 	return obj->toJsonString();
@@ -259,9 +264,9 @@ std::string Json::json::toJsonString()
 
 std::string Json::json::toJsonFile(std::string encoding)
 {
-	if (encoding == "GBK")
-		return "\xef\xbb\xbf" + G2U(toJsonString());
 	if (encoding == "UTF8" || encoding == "UTF-8")
+		return "\xef\xbb\xbf" + G2U(toJsonString());
+	if (encoding == "GBK")
 		return "\xef\xbb\xbf" + toJsonString();
 }
 
