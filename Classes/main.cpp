@@ -185,7 +185,6 @@ public:
 				pResponse->setVersion("HTTP/1.1");
 				return true;
 			}
-			
 		}
 		return false;
 	}
