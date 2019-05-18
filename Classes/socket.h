@@ -1,15 +1,14 @@
 
 #pragma once
-#include "util.h"
 
 #ifdef WINDOWS
 #include <WinSock2.h>
 #endif // WINDOWS
 
 #ifdef LINUX
-#include <sys\socket.h>
-#include <sys\types.h>
-#include <netinet\in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
 #include <unistd.h>
 #endif // LINUX
 

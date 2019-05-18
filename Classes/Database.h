@@ -1,7 +1,8 @@
 #pragma once
-#define NDEBUG
 #include "IdataBase.h"
 #include <stdio.h>
+
+#define NDEBUG
 #include <assert.h>
 
 #ifdef WINDOWS
@@ -11,6 +12,7 @@
 
 #include <sql.h>
 #include <sqlext.h>
+#include <sqltypes.h>
 
 
 class Database :public IdataBase
@@ -21,7 +23,9 @@ public:
 	vector<vector<string>> query(string sql);
 	int upData(string sql);
 	~Database();
+	static void Init();
 private:
-	HENV henv;
+	static HENV henv;
 	SQLHDBC hdbc;
+	static bool sign;
 };

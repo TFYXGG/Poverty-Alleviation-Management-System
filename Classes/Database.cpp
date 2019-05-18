@@ -2,17 +2,18 @@
 #include <sstream>
 #include <iostream>
 
-Database::Database(string serverName, string userName, string passWorld) :henv(NULL), hdbc(NULL)
+bool Database::sign = false;
+HENV Database::henv = nullptr;
+
+Database::Database(string serverName, string userName, string passWorld) : hdbc(NULL)
 {
-	SQLRETURN rcode;
-	// *) 申请环境句柄
-	rcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &henv);
-	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
-	// *) 设置ODBC版本的环境属性
-	rcode = SQLSetEnvAttr(henv, SQL_ATTR_ODBC_VERSION, (void *)SQL_OV_ODBC3, SQL_IS_INTEGER);
-	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
+	if (!sign)
+	{
+		Init();
+		sign = true;
+	}
 	// *) 分配连接句柄
-	rcode = SQLAllocHandle(SQL_HANDLE_DBC, henv, &hdbc);
+	SQLRETURN rcode = SQLAllocHandle(SQL_HANDLE_DBC, henv, &hdbc);
 	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
 	// *) 连接数据源
 	rcode = SQLConnect(hdbc, (SQLCHAR *)serverName.data(), serverName.length(),
@@ -57,7 +58,7 @@ vector<vector<string>> Database::query(string sql)
 	while (true)
 	{
 		char sz_buf[256];
-		char pszBuf[1024];
+		//char pszBuf[1024];
 		SQLLEN buflen;
 		vector<string> t;
 		if (SQLFetch(stmt) == SQL_NO_DATA)
@@ -67,14 +68,15 @@ vector<vector<string>> Database::query(string sql)
 		for (int i = 1; i <= colCount; i++)
 		{
 			string Data;
-			SQLColAttribute(stmt, i, SQL_DESC_NAME, sz_buf, 256, &buf_len, 0);
-			SQLColAttribute(stmt, i, SQL_DESC_TYPE, 0, 0, 0, &colType);
-			//SQLColAttribute(stmt, i, SQL_DESC_LENGTH, NULL, 0, 0, &colLen);
-			pszBuf[0] = '/0';
-			SQLGetData(stmt, i, SQL_C_CHAR, pszBuf, 50, &buflen);
+			//SQLColAttribute(stmt, i, SQL_DESC_NAME, sz_buf, 256, &buf_len, 0);
+			//SQLColAttribute(stmt, i, SQL_DESC_TYPE, 0, 0, 0, &colType);
+			SQLColAttribute(stmt, i, SQL_DESC_LENGTH, NULL, 0, 0, &colLen);
+			char *pszBuf = new char[colLen + 1];
+			pszBuf[0] = '\0';
+			SQLGetData(stmt, i, SQL_C_CHAR, pszBuf, colLen + 1, &buflen);
 			Data = pszBuf;
-			Data.erase(Data.find_last_not_of(" ") + 1);
 			t.push_back(Data);
+			delete[] pszBuf;
 		}
 		v.push_back(t);
 	}
@@ -115,5 +117,16 @@ Database::~Database()
 {
 	SQLDisconnect(hdbc);
 	SQLFreeHandle(SQL_HANDLE_DBC, hdbc);
-	SQLFreeHandle(SQL_HANDLE_ENV, henv);
+	//SQLFreeHandle(SQL_HANDLE_ENV, henv);
+}
+
+void Database::Init()
+{
+	SQLRETURN rcode;
+	// *) 申请环境句柄
+	rcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &henv);
+	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
+	// *) 设置ODBC版本的环境属性
+	rcode = SQLSetEnvAttr(henv, SQL_ATTR_ODBC_VERSION, (void *)SQL_OV_ODBC3, SQL_IS_INTEGER);
+	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
 }

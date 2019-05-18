@@ -179,19 +179,19 @@ std::string string2Utf_8(std::string str)
 	char *srcstart = inbuf;
 	char *tempoutbuf = outbuf;
 	auto stream = iconv_open("UTF8", "GBK");
-	auto srclen = str.length();
-	auto outlen = 1024ull;
+	size_t srclen = str.length();
+	size_t outlen = 1024;
 	size_t ret = iconv(stream, &srcstart, &srclen, &tempoutbuf, &outlen);
 	if (ret == -1)
 	{
 		perror("iconv");
 	}
 	unsigned char buf[1024] = { 0 };
-	memcpy(buf, outbuf, ret);
+	memcpy(buf, outbuf, 1024 - outlen);
 	std::stringstream ss;
-	for (int i = 0; i < ret; i++)
+	for (int i = 0; i < 1024 - outlen; i++)
 	{
-		ss << "%" << std::hex << buf[i];
+		ss << "%" << std::hex << (unsigned int)buf[i];
 	}
 	iconv_close(stream);
 	return ss.str();
@@ -246,3 +246,77 @@ std::string codingChinese(std::string str)
 	}
 	return ss.str();
 }
+
+
+std::string U2G(std::string utf8)
+{
+#ifdef WINDOWS
+	int len = MultiByteToWideChar(CP_UTF8, 0, utf8.data(), -1, NULL, 0);
+	wchar_t* wstr = new wchar_t[len + 1];
+	memset(wstr, 0, len + 1);
+	MultiByteToWideChar(CP_UTF8, 0, utf8.data(), -1, wstr, len);
+	len = WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
+	char* str = new char[len + 1];
+	memset(str, 0, len + 1);
+	WideCharToMultiByte(CP_ACP, 0, wstr, -1, str, len, NULL, NULL);
+	if (wstr) delete[] wstr;
+	std::string s = str;
+	delete[] str;
+	return s;
+#endif // WINDOWS
+#ifdef LINUX
+	auto stream = iconv_open("GBK", "UTF8");
+	char *input = new char[utf8.length() + 1]{ 0 };
+	char *output = new char[utf8.length() * 2]{ 0 };
+	strcpy(input, utf8.data());
+	char *srcstart = input;
+	size_t srclen = utf8.length();
+	char *tempoutbuf = output;
+	size_t outlen = utf8.length() * 2;
+	size_t ret = iconv(stream, &srcstart, &srclen, &tempoutbuf, &outlen);
+	if (ret == -1)
+		return "";
+	tempoutbuf = 0;
+	std::string str(output);
+	delete[] output;
+	delete[] input;
+	return str;
+#endif // LINUX
+}
+
+std::string G2U(std::string gb2312)
+{
+#ifdef WINDOWS
+	int len = MultiByteToWideChar(CP_ACP, 0, gb2312.data(), -1, NULL, 0);
+	wchar_t* wstr = new wchar_t[len + 1];
+	memset(wstr, 0, len + 1);
+	MultiByteToWideChar(CP_ACP, 0, gb2312.data(), -1, wstr, len);
+	len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
+	char* str = new char[len + 1];
+	memset(str, 0, len + 1);
+	WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, len, NULL, NULL);
+	if (wstr) delete[] wstr;
+	std::string s = str;
+	delete[] str;
+	return s;
+#endif // WINDOWS
+#ifdef LINUX
+	auto stream = iconv_open("UTF8", "GBK");
+	char *input = new char[gb2312.length() + 1]{ 0 };
+	char *output = new char[2 * gb2312.length() + 1]{ 0 };
+	strcpy(input, gb2312.data());
+	char *srcstart = input;
+	size_t srclen = gb2312.length();
+	char *tempoutbuf = output;
+	size_t outlen = 2 * gb2312.length();
+	size_t ret = iconv(stream, &srcstart, &srclen, &tempoutbuf, &outlen);
+	if (ret == -1)
+		return "";
+	tempoutbuf = 0;
+	std::string str(output);
+	delete[] output;
+	delete[] input;
+	return str;
+#endif // LINUX
+}
+

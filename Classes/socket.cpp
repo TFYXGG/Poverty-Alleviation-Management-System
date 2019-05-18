@@ -1,5 +1,11 @@
 
 #include "socket.h"
+#include <cstdlib>
+
+#ifdef WINDOWS
+#include<ws2tcpip.h>
+#endif // WINDOWS
+
 
 bool InitFlag = false;
 bool socketInit()
@@ -28,7 +34,7 @@ ServerSocket::ServerSocket(int port)
 	if (slisten == INVALID_SOCKET)
 	{
 		printf("socket error !");
-		return;
+		exit(2);
 	}
 	SOCKADDR_IN sin;
 	sin.sin_family = AF_INET;
@@ -40,20 +46,26 @@ ServerSocket::ServerSocket(int port)
 	sin.sin_addr.s_addr = 0;
 #endif // LINUX
 
+#ifdef LINUX
+	int on = 1;
+	if (setsockopt(slisten, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)))
+		exit(3);
+#endif
 	if (bind(slisten, (LPSOCKADDR)&sin, sizeof(sin)) == SOCKET_ERROR)
 	{
 		printf("bind error !");
+		exit(4);
 	}
-	if (listen(slisten, 100) == SOCKET_ERROR)	//最大连接数
+	if (listen(slisten, 10) == SOCKET_ERROR)	//最大连接数
 	{
 		printf("listen error !");
-		return;
+		exit(5);
 	}
 }
 
 Socket * ServerSocket::Accept()
 {
-	SOCKET sClient;
+	SOCKET sClient = 0;
 	SOCKADDR_IN remoteAddr;
 #ifdef LINUX
 	unsigned int nAddrlen = sizeof(remoteAddr);
@@ -88,12 +100,23 @@ Socket::Socket(SOCKET sClient):sClient(sClient)
 
 int Socket::sendData(const char * Data, int size)
 {
-	return send(sClient, Data, size, 0);
+	int len = 0;
+	int rsize = 0;
+	while (size> 0)
+	{
+		len = send(sClient, Data, size, 0);
+		if (len < 0)
+			return rsize;
+		Data += len;
+		size -= len;
+		rsize += len;
+	}
+	return rsize;
 }
 
 int Socket::recvData(char * Data, int size_max)
 {
-	int ret = recv(sClient, Data, size_max, 0);
+	int ret = recv(sClient, Data, size_max - 1, 0);
 	if (ret > 0)
 	{
 		Data[ret] = 0x00;
@@ -108,7 +131,6 @@ void Socket::Close()
 #endif // WINDOWS
 #ifdef LINUX
 	close(sClient);
-	
 #endif // LINUX
 }
 
@@ -121,3 +143,4 @@ void Socket::setSndTimeO(long long time)
 {
 	setsockopt(sClient, SOL_SOCKET, SO_SNDTIMEO, (char *)&time, sizeof(long long));
 }
+

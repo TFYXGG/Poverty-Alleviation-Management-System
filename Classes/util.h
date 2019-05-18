@@ -28,3 +28,13 @@ std::string reductionChinese(std::string str);
 
 //对中文进行编码
 std::string codingChinese(std::string str);
+
+//UTF-8到GB2312的转换
+std::string U2G(std::string utf8);
+
+//GB2312到UTF-8的转换
+std::string G2U(std::string gb2312);
+
+
+//转json文件
+//std::string arr2json(std::vector<std::string> name, std::vector<bool> type, std::vector<std::string> data);

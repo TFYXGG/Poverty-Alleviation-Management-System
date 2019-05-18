@@ -7,7 +7,6 @@
 #include <cstring>
 
 
-
 RequestMessage::RequestMessage(char * message, int len):entityBody(nullptr)
 {
 	//°´»»ÐÐ·û·Ö¸î
@@ -38,7 +37,7 @@ RequestMessage::RequestMessage(char * message, int len):entityBody(nullptr)
 	int bodyLen = 0;
 	try {
 		bodyLen = atoi(getHeaders("Content-Length").c_str());
-		entityBody = new char[len];
+		entityBody = new char[bodyLen];
 		memcpy(entityBody, message + len - bodyLen, bodyLen);
 	}catch(std::out_of_range e)
 	{
@@ -234,8 +233,11 @@ void ResponseMessage::setBody(const char * data, int size)
 	{
 		delete[] entityBody;
 	}
-	entityBody = new char[size + 1];
-	memcpy(this->entityBody, data, size + 1);
+	entityBody = new char[size];
+	std::stringstream ss;
+	ss << size;
+	setHeaders("Content-Length", ss.str());
+	memcpy(this->entityBody, data, size);
 }
 
 bool ResponseMessage::openFileSetBody(std::string fileName)
