@@ -97,7 +97,7 @@ public:
 				string body(pRequest->getBody(), atoi(pRequest->getHeaders("Content-Length").data()));
 				Json::json j(body, "UTF-8");
 				logic lg(new Database(dsnName, userName, passWord));
-				if(lg.modify(((Json::numVal*)(j.getRoot()->at("id")))->getInt(), ((Json::strVal*)(j.getRoot()->at("name")))->getCppString(), ((Json::numVal*)(j.getRoot()->at("fare")))->getFloat(), ((Json::strVal*)(j.getRoot()->at("id")))->getCppString()))
+				if(lg.modify(((Json::numVal*)(j.getRoot()->at("id")))->getInt(), ((Json::strVal*)(j.getRoot()->at("name")))->getCppString(), ((Json::numVal*)(j.getRoot()->at("fare")))->getFloat(), ((Json::strVal*)(j.getRoot()->at("address")))->getCppString()))
 					pResponse->setBody("true", sizeof("true"));
 				else
 					pResponse->setBody("false", sizeof("false"));
