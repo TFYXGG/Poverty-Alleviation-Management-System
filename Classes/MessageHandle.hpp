@@ -103,39 +103,59 @@ void HandleThread::run()
 {
 	//暂时未实现长链接功能
 	char buf[BufSizeMax];
-	s->setRcvTimeO(1000 * 60);		//设置超时时间1分钟
-	do {
-		if (pResponse != nullptr)
-		{
-			delete pResponse;
-			pResponse = nullptr;
-		}
-		if (pRequest != nullptr)
-		{
-			delete pRequest;
-			pRequest = nullptr;
-		}
-		int len = s->recvData(buf, BufSizeMax);
-		if (len <= 0)
-			break;
-		try
-		{
-			pResponse = new ResponseMessage();
-			pRequest = new RequestMessage(buf, len);
-			if (!onHttp())
-				onDefaultHttp();
-			pResponse->setVersion("HTTP/1.1");
-			pResponse->setHeaders("Connection", "Keep-Alive");
-			sendResponseMessage();
-		}
-		catch (...)
-		{
-			pResponse->setVersion("HTTP/1.1");
-			pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::not_found));
-			pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::not_found));
-			sendResponseMessage();
-		}
-	} while (compareNoCase(pRequest->getHeaders("Connection"), "Keep-Alive"));
+	s->setRcvTimeO(1000 * 60 *30);		//设置超时时间30分钟
+	try
+	{
+		do {
+			if (pResponse != nullptr)
+			{
+				delete pResponse;
+				pResponse = nullptr;
+			}
+			if (pRequest != nullptr)
+			{
+				delete pRequest;
+				pRequest = nullptr;
+			}
+			int len = s->recvData(buf, BufSizeMax);
+			if (len <= 0)
+				break;
+			try
+			{
+				pResponse = new ResponseMessage();
+				pRequest = new RequestMessage(buf, len);
+				try {
+					while (pRequest->getAlreadySavedBodyLength() < atoi(pRequest->getHeaders("Content-Length").data()))
+					{
+						int len = s->recvData(buf, BufSizeMax);
+						if (len <= 0)
+							break;
+						pRequest->apendBody(buf, len);
+					}
+				}
+				catch (std::out_of_range e)
+				{
+					//此时没有消息体
+				}
+				if (!onHttp())
+					onDefaultHttp();
+				pResponse->setVersion("HTTP/1.1");
+				pResponse->setHeaders("Connection", "Keep-Alive");
+				sendResponseMessage();
+			}
+			catch (...)
+			{
+				pResponse->setVersion("HTTP/1.1");
+				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::not_found));
+				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::not_found));
+				sendResponseMessage();
+			}
+		} while (compareNoCase(pRequest->getHeaders("Connection"), "Keep-Alive"));
+	}
+	catch (std::exception e)
+	{
+		//捕获所有未处理的异常
+	}
 	//不能在析构中释放（不能修改）
 	if (s != nullptr)
 	{

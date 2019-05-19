@@ -7,7 +7,7 @@
 #include <cstring>
 
 
-RequestMessage::RequestMessage(char * message, int len):entityBody(nullptr)
+RequestMessage::RequestMessage(char * message, int len):entityBody(nullptr), AlreadySavedBodyLength(0)
 {
 	//按换行符分割
 	std::vector<std::string> vs = split(message, "\r\n");
@@ -38,7 +38,11 @@ RequestMessage::RequestMessage(char * message, int len):entityBody(nullptr)
 	try {
 		bodyLen = atoi(getHeaders("Content-Length").c_str());
 		entityBody = new char[bodyLen];
-		memcpy(entityBody, message + len - bodyLen, bodyLen);
+		//memcpy(entityBody, message + len - bodyLen, bodyLen);
+		char * body = strstr(message, "\r\n\r\n");
+		body += 4;
+		memcpy(entityBody, body, message + len - body);
+		AlreadySavedBodyLength = message + len - body;
 	}catch(std::out_of_range e)
 	{
 		//std::cout << "初始化消息体时发生异常:" << e.what() << std::endl;
@@ -91,6 +95,19 @@ RequestMessage::~RequestMessage()
 	{
 		delete[] entityBody;
 	}
+}
+
+unsigned int RequestMessage::getAlreadySavedBodyLength()
+{
+	return AlreadySavedBodyLength;
+}
+
+void RequestMessage::apendBody(char * message, int len)
+{
+	if (len <= 0)
+		return;
+	memcpy(entityBody + AlreadySavedBodyLength, message, len);
+	AlreadySavedBodyLength += len;
 }
 
 std::string ResponseMessage::getStatusString(HTTPStatusCode hsc)

@@ -27,6 +27,10 @@ public:
 	const char* getBody()const;
 	//析构
 	~RequestMessage();
+	//获取已经接收的消息体长度
+	unsigned int getAlreadySavedBodyLength();
+	//追加设置消息体
+	void apendBody(char * message, int len);
 private:
 	std::string method;		//请求方式
 	std::string requestURL;	//请求URL
@@ -34,6 +38,7 @@ private:
 	std::string version;	//报文所使用的HTTP版本
 	std::map<std::string, std::string> headers;	//请求头部
 	char *entityBody;		//请求实体
+	unsigned int AlreadySavedBodyLength;
 };
 
 class ResponseMessage		//响应报文
