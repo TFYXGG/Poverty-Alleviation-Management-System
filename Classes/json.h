@@ -12,9 +12,6 @@ namespace Json
 	{	
 	public:
 		jsonException(char const* const _Message);
-		const char* what()const throw() override;
-	private:
-		std::string errorMessage;
 	};
 
 	class value

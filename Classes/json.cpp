@@ -270,9 +270,4 @@ std::string Json::json::toJsonFile(std::string encoding)
 		return "\xef\xbb\xbf" + toJsonString();
 }
 
-Json::jsonException::jsonException(char const * const _Message):errorMessage(_Message){}
-
-const char * Json::jsonException::what() const throw()
-{
-	return errorMessage.data();
-}
+Json::jsonException::jsonException(char const * const _Message):exception(_Message){}
