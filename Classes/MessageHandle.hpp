@@ -152,7 +152,7 @@ void HandleThread::run()
 			}
 		} while (compareNoCase(pRequest->getHeaders("Connection"), "Keep-Alive"));
 	}
-	catch (std::exception e)
+	catch (...)
 	{
 		//捕获所有未处理的异常
 	}
