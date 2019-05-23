@@ -12,6 +12,11 @@ namespace Json
 	{	
 	public:
 		jsonException(char const* const _Message);
+#ifdef LINUX
+		const char* what() const noexcept;
+	private:
+		char errorMessage[256];
+#endif // LINUX
 	};
 
 	class value

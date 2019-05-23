@@ -2,6 +2,7 @@
 #include <sstream>
 #include <algorithm>
 #include "util.h"
+#include <cstring>
 
 
 namespace Json
@@ -270,4 +271,20 @@ std::string Json::json::toJsonFile(std::string encoding)
 		return "\xef\xbb\xbf" + toJsonString();
 }
 
-Json::jsonException::jsonException(char const * const _Message):exception(_Message){}
+#ifdef WINDOWS
+Json::jsonException::jsonException(char const * const _Message) :exception(_Message) {}
+#endif // WINDOWS
+
+
+#ifdef LINUX
+
+Json::jsonException::jsonException(char const * const _Message)
+{
+	strcpy(this->errorMessage, _Message);
+}
+
+const char * Json::jsonException::what() const noexcept
+{
+	return errorMessage;
+}
+#endif // LINUX
