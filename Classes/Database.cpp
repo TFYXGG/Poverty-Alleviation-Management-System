@@ -1,16 +1,24 @@
 #include "Database.h"
 #include <sstream>
 #include <iostream>
+#include <mutex>
 
 bool Database::sign = false;
 HENV Database::henv = nullptr;
+
+mutex l;
 
 Database::Database(string serverName, string userName, string passWorld) : hdbc(NULL)
 {
 	if (!sign)
 	{
-		Init();
-		sign = true;
+		l.lock();
+		if (!sign)
+		{
+			Init();
+			sign = true;
+		}
+		l.unlock();
 	}
 	// *) ∑÷≈‰¡¨Ω”æ‰±˙
 	SQLRETURN rcode = SQLAllocHandle(SQL_HANDLE_DBC, henv, &hdbc);

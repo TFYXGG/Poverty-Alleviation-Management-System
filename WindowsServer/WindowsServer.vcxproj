@@ -37,6 +37,10 @@
     <ClCompile Include="..\Classes\socket.cpp" />
     <ClCompile Include="..\Classes\util.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{2B2AE52F-0399-492C-B484-702F04AECB1A}</ProjectGuid>
