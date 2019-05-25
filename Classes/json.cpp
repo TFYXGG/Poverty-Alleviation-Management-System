@@ -143,7 +143,7 @@ Json::object::object(const std::string & str, int & index)
 	}
 }
 
-void Json::object::add(std::string key, value *val)
+void Json::object::add(std::string const &key, value *val)
 {
 	this->insert(map::value_type(new strVal(key), val));
 }
@@ -161,7 +161,7 @@ std::string Json::object::toJsonString()
 	return str;
 }
 
-Json::value * Json::object::at(std::string key)
+Json::value * Json::object::at(std::string const &key)
 {
 	strVal sv(key);
 	return this->map::at(&sv);
@@ -225,7 +225,7 @@ Json::json::json()
 {
 }
 
-Json::json::json(const std::string &jsonText, std::string encoding):obj(nullptr)
+Json::json::json(const std::string &jsonText, std::string const &encoding):obj(nullptr)
 {
 	int index = 0;
 	std::string str;
@@ -263,7 +263,7 @@ std::string Json::json::toJsonString()
 	return obj->toJsonString();
 }
 
-std::string Json::json::toJsonFile(std::string encoding)
+std::string Json::json::toJsonFile(std::string const &encoding)
 {
 	if (encoding == "UTF8" || encoding == "UTF-8")
 		return "\xef\xbb\xbf" + G2U(toJsonString());

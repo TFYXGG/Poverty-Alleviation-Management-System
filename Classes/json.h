@@ -68,9 +68,9 @@ namespace Json
 	public:
 		object();
 		object(const std::string &str, int &index);
-		void add(std::string key,value *val);
+		void add(std::string const &key,value *val);
 		virtual std::string toJsonString() override;
-		value* at(std::string key);
+		value* at(std::string const &key);
 		virtual ~object() override;
 	};
 	//สýื้
@@ -88,10 +88,10 @@ namespace Json
 	{
 	public:
 		json();
-		json(const std::string &jsonText,std::string encoding = "GBK");
+		json(const std::string &jsonText,std::string const &encoding = "GBK");
 		json(object *obj);
 		std::string toJsonString();
-		std::string toJsonFile(std::string encoding = "UTF8");
+		std::string toJsonFile(std::string const &encoding = "UTF8");
 		object * getRoot();
 		void setRoot(object *Root);
 		~json();

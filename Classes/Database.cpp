@@ -8,7 +8,7 @@ HENV Database::henv = nullptr;
 
 mutex l;
 
-Database::Database(string serverName, string userName, string passWorld) : hdbc(NULL)
+Database::Database(string const &serverName, string const &userName, string const &passWorld) : hdbc(NULL)
 {
 	if (!sign)
 	{
@@ -29,7 +29,7 @@ Database::Database(string serverName, string userName, string passWorld) : hdbc(
 	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
 }
 
-vector<vector<string>> Database::query(string sql)
+vector<vector<string>> Database::query(string const &sql)
 {
 	// *) ·ÖÅäÓï¾ä¾ä±ú
 	SQLHSTMT stmt;
@@ -92,7 +92,7 @@ vector<vector<string>> Database::query(string sql)
 	return v;
 }
 
-int Database::upData(string sql)
+int Database::upData(string const &sql)
 {
 	// *) ·ÖÅäÓï¾ä¾ä±ú
 	SQLHSTMT stmt;

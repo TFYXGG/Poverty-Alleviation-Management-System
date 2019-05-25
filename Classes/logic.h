@@ -8,16 +8,16 @@ public:
 	logic(IdataBase *db);
 
 	//登陆	登陆名 登陆密码
-	bool land(string userName, string passWorld);
+	bool land(const string &userName, const string &passWorld);
 
 	//景点查询
 	vector<vector<string>> sightseeing();
 
 	//增加景点	景点名 票价 地址
-	bool addAttractions(string name, float fare, string address);
+	bool addAttractions(const string &name, float fare, const string &address);
 
 	//修改景点信息
-	bool modify(int id, string newName, float newFare, string newAddress);
+	bool modify(int id, const string &newName, float newFare, const string &newAddress);
 
 	//删除景点
 	bool remove(int id);

@@ -38,7 +38,7 @@ public:
 	//重载()操作符
 	void operator()();
 	//设置根目录
-	static void setRoot(std::string);
+	static void setRoot(std::string const &root);
 protected:
 	RequestMessage *pRequest;
 	ResponseMessage *pResponse;
@@ -209,7 +209,7 @@ void HandleThread::operator()()
 	this->run();
 }
 
-void HandleThread::setRoot(std::string root)
+void HandleThread::setRoot(std::string const &root)
 {
 	HandleThread::root = root;
 }

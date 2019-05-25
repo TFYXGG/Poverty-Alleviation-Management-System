@@ -13,7 +13,7 @@
 
 
 
-std::vector<std::string> split(std::string str, std::string pattern)
+std::vector<std::string> split(std::string str, std::string const &pattern)
 {
 	std::string::size_type pos;
 	std::vector<std::string> result;
@@ -34,7 +34,7 @@ std::vector<std::string> split(std::string str, std::string pattern)
 	return result;
 }
 
-std::map<std::string, std::string> strToMap(std::string str, std::string pairPattern, std::string KVpattern)
+std::map<std::string, std::string> strToMap(std::string const &str, std::string const &pairPattern, std::string const &KVpattern)
 {
 	std::map<std::string, std::string> result;
 	std::vector<std::string> element = split(str, pairPattern);
@@ -57,7 +57,7 @@ std::string strToLower(const std::string str)
 	return strTmp;
 }
 
-bool compareNoCase(std::string str1, std::string str2)
+bool compareNoCase(std::string const &str1, std::string const &str2)
 {
 	std::string strA = strToLower(str1);
 	std::string strB = strToLower(str2);
@@ -112,7 +112,7 @@ std::string UnicodeToUtf8(const std::wstring &strUnicode)
 	return result;
 }
 
-std::string string2Utf_8(std::string str)
+std::string string2Utf_8(std::string const &str)
 {
 	setlocale(LC_ALL, "chs");
 	wchar_t pwcs[256];
@@ -171,7 +171,7 @@ std::string utf_82String(std::string str)
 }
 
 //µ¥×Ö·û×ªUTF-8±àÂë£¨%¼ä¸ô£©
-std::string string2Utf_8(std::string str)
+std::string string2Utf_8(std::string const &str)
 {
 	char inbuf[1024] = { 0 };
 	char outbuf[1024] = { 0 };
@@ -200,7 +200,7 @@ std::string string2Utf_8(std::string str)
 #endif // LINUX
 
 
-std::string reductionChinese(std::string str)
+std::string reductionChinese(std::string const &str)
 {
 	std::stringstream ss;
 	for (int i = 0; i < str.length(); i++)
@@ -221,7 +221,7 @@ std::string reductionChinese(std::string str)
 	return ss.str();
 }
 
-std::string codingChinese(std::string str)
+std::string codingChinese(std::string const &str)
 {
 	std::stringstream ss;
 	for (int i = 0; i < str.length(); i++)
@@ -248,7 +248,7 @@ std::string codingChinese(std::string str)
 }
 
 
-std::string U2G(std::string utf8)
+std::string U2G(std::string const &utf8)
 {
 #ifdef WINDOWS
 	int len = MultiByteToWideChar(CP_UTF8, 0, utf8.data(), -1, NULL, 0);
@@ -284,7 +284,7 @@ std::string U2G(std::string utf8)
 #endif // LINUX
 }
 
-std::string G2U(std::string gb2312)
+std::string G2U(std::string const &gb2312)
 {
 #ifdef WINDOWS
 	int len = MultiByteToWideChar(CP_ACP, 0, gb2312.data(), -1, NULL, 0);

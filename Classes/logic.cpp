@@ -9,7 +9,7 @@ logic::logic(IdataBase * db)
 	this->db = db;
 }
 
-bool logic::land(string userName, string passWorld)
+bool logic::land(string const &userName, string const &passWorld)
 {	
 	stringstream ss;
 	ss << " select 密码 from " << " 管理员信息 " << " where  用户名 = " << " '" << userName << "'";
@@ -24,7 +24,7 @@ vector<vector<string>> logic::sightseeing()
 	return db->query(ss.str());
 }
 
-bool logic::addAttractions(string name, float fare, string address)
+bool logic::addAttractions(string const &name, float fare, string const &address)
 {
 	stringstream ss;
 	ss << "insert into 景点信息" << " (名称,票价,地区) values (" << "'" << name << " '," << fare << "," << "'" << address << "')";
@@ -32,7 +32,7 @@ bool logic::addAttractions(string name, float fare, string address)
 	return b != -1 && b != 0;
 }
 
-bool logic::modify(int id, string newName, float newFare, string newAddress)
+bool logic::modify(int id, string const &newName, float newFare, string const &newAddress)
 {	
 	stringstream ss;
 	ss << "update " << "景点信息 " << "set ";

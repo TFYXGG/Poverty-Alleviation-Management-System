@@ -59,7 +59,7 @@ const std::string & RequestMessage::getURL() const
 	return requestURL;
 }
 
-const std::string & RequestMessage::getParameter(std::string key) const
+const std::string & RequestMessage::getParameter(std::string const &key) const
 {
 	return requestParameter.at(key);
 }
@@ -74,7 +74,7 @@ const std::string & RequestMessage::getVersion() const
 	return version;
 }
 
-const std::string & RequestMessage::getHeaders(const std::string key) const
+const std::string & RequestMessage::getHeaders(const std::string &key) const
 {
 	return headers.at(key);
 }
@@ -257,7 +257,7 @@ void ResponseMessage::setBody(const char * data, int size)
 	memcpy(this->entityBody, data, size);
 }
 
-bool ResponseMessage::openFileSetBody(std::string fileName)
+bool ResponseMessage::openFileSetBody(std::string const &fileName)
 {
 	int len = 0;
 	//以二进制方式打开文件
