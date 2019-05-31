@@ -141,12 +141,12 @@ class IncompleteMessage :public httpMessageException
 {
 public:
 	IncompleteMessage()noexcept = default;
-	virtual char const* what() const;
+	const char * what() const noexcept;
 };
 
 class UnableToOpenResource :public httpMessageException
 {
 public:
 	UnableToOpenResource()noexcept = default;
-	virtual char const* what() const;
+	const char * what() const noexcept;
 };

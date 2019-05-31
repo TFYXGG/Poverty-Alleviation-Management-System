@@ -56,7 +56,7 @@ ServerSocket::ServerSocket(int port)
 		printf("bind error !");
 		exit(4);
 	}
-	if (listen(slisten, 10) == SOCKET_ERROR)	//最大连接数
+	if (listen(slisten, 100) == SOCKET_ERROR)	//最大连接数
 	{
 		printf("listen error !");
 		exit(5);

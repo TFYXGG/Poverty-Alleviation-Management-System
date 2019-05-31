@@ -326,12 +326,12 @@ int ResponseMessage::getByte(char *&buf)
 	return len;
 }
 
-char const * IncompleteMessage::what() const
+const char * IncompleteMessage::what() const noexcept
 {
 	return "不完整的消息体";
 }
 
-char const * UnableToOpenResource::what() const
+const char * UnableToOpenResource::what() const noexcept
 {
 	return "无法打开资源";
 }
