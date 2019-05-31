@@ -9,14 +9,17 @@
 
 using namespace std;
 
-const string dsnName = "fpglxt";
-const string userName = "sa";
-const string passWord = "1019334418Zz";
+string serverName = "fpglxt";
+string userName = "sa";
+string passWorld = "1019334418Zz";
 
 class PovertyAlleviationManagementSystem:public HandleThread
 {
 public:
-	PovertyAlleviationManagementSystem(Socket *s) :HandleThread(s) {	}
+	PovertyAlleviationManagementSystem(Socket *s) :HandleThread(s)
+	{
+		logic::setDatabase(Database::getInstance());
+	}
 	bool onHttp()
 	{
 		std::string method = pRequest->getMethod();
@@ -34,8 +37,7 @@ public:
 			}
 			else if (URL == "/getviewlistinfo")
 			{
-				logic lg(new Database(dsnName, userName, passWord));
-				auto p = lg.attractionsInformation();
+				auto p = logic::attractionsInformation();
 				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
 				Json::json json;
@@ -65,9 +67,8 @@ public:
 				string body(pRequest->getBody(), atoi(pRequest->getHeaders("Content-Length").data()));
 				Json::json j(body, "UTF8");
 				auto root = j.getRoot();	
-				logic lg(new Database(dsnName, userName, passWord));
 				float price = 0.0;
-				if(lg.addAttractions(((Json::strVal*)(root->at("name")))->getCppString(), ((Json::numVal*)(root->at("price")))->getFloat(), ((Json::strVal*)(root->at("area")))->getCppString()))
+				if(logic::addAttractions(((Json::strVal*)(root->at("name")))->getCppString(), ((Json::numVal*)(root->at("price")))->getFloat(), ((Json::strVal*)(root->at("area")))->getCppString()))
 					pResponse->setBody("true", sizeof("true"));
 				else
 					pResponse->setBody("false", sizeof("false"));
@@ -79,8 +80,7 @@ public:
 			{
 				string body(pRequest->getBody(),atoi(pRequest->getHeaders("Content-Length").data()));
 				Json::json j(body, "UTF8");
-				logic lg(new Database(dsnName, userName, passWord));
-				if(lg.remove(((Json::numVal *)(j.getRoot()->at("id")))->getInt()))
+				if(logic::remove(((Json::numVal *)(j.getRoot()->at("id")))->getInt()))
 					pResponse->setBody("true", sizeof("true"));
 				else
 					pResponse->setBody("false", sizeof("false"));
@@ -92,8 +92,7 @@ public:
 			{
 				string body(pRequest->getBody(), atoi(pRequest->getHeaders("Content-Length").data()));
 				Json::json j(body, "UTF-8");
-				logic lg(new Database(dsnName, userName, passWord));
-				if(lg.modify(((Json::numVal*)(j.getRoot()->at("id")))->getInt(), ((Json::strVal*)(j.getRoot()->at("name")))->getCppString(), ((Json::numVal*)(j.getRoot()->at("fare")))->getFloat(), ((Json::strVal*)(j.getRoot()->at("address")))->getCppString()))
+				if(logic::modify(((Json::numVal*)(j.getRoot()->at("id")))->getInt(), ((Json::strVal*)(j.getRoot()->at("name")))->getCppString(), ((Json::numVal*)(j.getRoot()->at("fare")))->getFloat(), ((Json::strVal*)(j.getRoot()->at("address")))->getCppString()))
 					pResponse->setBody("true", sizeof("true"));
 				else
 					pResponse->setBody("false", sizeof("false"));
@@ -132,8 +131,7 @@ public:
 				{
 					day = atoi(sDay.data());
 				}
-				logic lg(new Database(dsnName, userName, passWord));
-				auto im = lg.summary(year, month, day);
+				auto im = logic::summary(year, month, day);
 				Json::json ResJson;
 				Json::object *root = new Json::object;
 				Json::array *a = new Json::array;
@@ -161,10 +159,9 @@ public:
 			{
 				string body(pRequest->getBody(), atoi(pRequest->getHeaders("Content-Length").data()));
 				Json::json j(body, "UTF8");
-				logic lg(new Database(dsnName, userName, passWord));
 				Json::object *obj;
 				Json::json res(obj);
-				if (lg.land(((Json::strVal*)(j.getRoot()->at("username")))->getCppString(),((Json::strVal*)(j.getRoot()->at("password")))->getCppString()))
+				if (logic::land(((Json::strVal*)(j.getRoot()->at("username")))->getCppString(),((Json::strVal*)(j.getRoot()->at("password")))->getCppString()))
 				{
 					obj->add("x", new Json::strVal("true"));
 					pResponse->setBody(res.toJsonFile().data(), res.toJsonFile().length());

@@ -3,11 +3,9 @@
 #include <sstream>
 #include <ctime>
 #include <iomanip>
+#include <mutex>
 
-logic::logic(IdataBase * db)
-{
-	this->db = db;
-}
+IdataBase *logic::db = nullptr;
 
 bool logic::land(string const &userName, string const &passWorld)
 {	
@@ -75,7 +73,7 @@ vector<vector<string>> logic::attractionsInformation()
 	return db->query("select * from æ∞µ„–≈œ¢");
 }
 
-logic::~logic()
+void logic::setDatabase(IdataBase * db)
 {
-	delete db;
+	logic::db = db;
 }
