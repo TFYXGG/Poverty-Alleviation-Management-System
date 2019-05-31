@@ -135,9 +135,31 @@ Json::object::object(const std::string & str, int & index)
 	{ 
 		strVal *key = new strVal(str, index);
 		if (str.at(index++) != ':')
+		{
+			//对已经构造的堆对象析构
+			for (auto it = this->begin(); it != this->end(); it++)
+			{
+				delete it->first;
+				delete it->second;
+			}
+			//抛出异常
 			throw jsonException("object 初始化时找不到符号\":\"");
-		value *val = pGetValue(str, index);
-		this->insert(std::pair<strVal *, value *>(key, val));
+		}
+		try
+		{
+			value *val = pGetValue(str, index);
+			this->insert(std::pair<strVal *, value *>(key, val));
+		}
+		catch(...){
+			//析构以构造堆对象
+			for (auto it = this->begin(); it != this->end(); it++)
+			{
+				delete it->first;
+				delete it->second;
+			}
+			//继续抛出
+			throw;
+		}
 		if (str.at(index++) == '}')
 			return;
 	}
@@ -183,7 +205,10 @@ Json::array::array()
 Json::array::array(const std::string & str, int & index)
 {
 	if (str.at(index++) != '[')
+	{
+		//std::for_each(this->begin(), this->end(), [](Json::value* it) {delete it; });
 		throw jsonException("array 构建时未找到起始位置");
+	}
 	try
 	{
 		while (true)
@@ -196,7 +221,13 @@ Json::array::array(const std::string & str, int & index)
 	}
 	catch (std::out_of_range)
 	{
+		std::for_each(this->begin(), this->end(), [](Json::value* it) {delete it; });
 		throw jsonException("array 构建时未找到结束标志");
+	}
+	catch (...)
+	{
+		std::for_each(this->begin(), this->end(), [](Json::value* it) {delete it; });
+		throw;
 	}
 }
 
