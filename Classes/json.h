@@ -23,7 +23,7 @@ namespace Json
 	{
 	public:
 		virtual std::string toJsonString() = 0;
-		virtual ~value() {};
+		virtual ~value() = default;
 	};
 
 	//字符串类型
@@ -73,8 +73,8 @@ namespace Json
 		value* at(std::string const &key);
 		virtual ~object() override;
 	};
-	//数组
 
+	//数组
 	class array :public value, public std::vector<value*>
 	{
 	public:

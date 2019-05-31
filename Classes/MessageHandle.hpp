@@ -118,7 +118,7 @@ void HandleThread::run()
 			}
 			int len = s->recvData(buf, BufSizeMax);
 			if (len <= 0)
-				break;
+				goto sign;
 			pResponse = new ResponseMessage();
 			//协议版本
 			pResponse->setVersion("HTTP/1.1");
@@ -139,9 +139,9 @@ void HandleThread::run()
 			if (!onHttp())
 				onDefaultHttp();
 			pResponse->setHeaders("Connection", "Keep-Alive");
-			sendResponseMessage();
 			if (pRequest == nullptr)
 				break;
+			sendResponseMessage();
 		} while (compareNoCase(pRequest->getHeaders("Connection"), "Keep-Alive"));
 	}
 	catch (IncompleteMessage e)
@@ -149,24 +149,22 @@ void HandleThread::run()
 		//请求报文不完整
 		pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::bad_request));
 		pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::bad_request));
-		sendResponseMessage();
 	}
 	catch (UnableToOpenResource e)
 	{
 		//无法打开所需要的资源
 		pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::not_found));
 		pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::not_found));
-		sendResponseMessage();
 	}
 	catch (...)
 	{
 		//其他的错误
 		pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::bad_request));
 		pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::bad_request));
-		sendResponseMessage();
 	}
-
+	sendResponseMessage();
 	//不能在析构中释放（不能修改）
+	sign:
 	if (s != nullptr)
 	{
 		this->s->Close();
