@@ -130,3 +130,23 @@ private:
 	std::map<std::string, std::string> headers;	//请求头部
 	char *entityBody;		//请求实体
 };
+
+class httpMessageException :public std::exception
+{
+public:
+	httpMessageException()noexcept = default;
+};
+
+class IncompleteMessage :public httpMessageException
+{
+public:
+	IncompleteMessage()noexcept = default;
+	virtual char const* what() const;
+};
+
+class UnableToOpenResource :public httpMessageException
+{
+public:
+	UnableToOpenResource()noexcept = default;
+	virtual char const* what() const;
+};

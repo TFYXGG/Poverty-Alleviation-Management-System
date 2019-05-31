@@ -22,7 +22,7 @@ RequestMessage::RequestMessage(char * message, int len):entityBody(nullptr), Alr
 	}
 	catch (std::out_of_range e)
 	{
-		//std::cout <<"初始化URL参数时发生异常:"<<e.what() << std::endl;
+		//此时URL不带参数
 	}
 	version = startLineVs.at(2);
 	//消息头部初始化
@@ -40,12 +40,17 @@ RequestMessage::RequestMessage(char * message, int len):entityBody(nullptr), Alr
 		entityBody = new char[bodyLen];
 		//memcpy(entityBody, message + len - bodyLen, bodyLen);
 		char * body = strstr(message, "\r\n\r\n");
+		if (body == NULL)
+		{
+			//接收的消息不完整
+			delete entityBody;
+			throw IncompleteMessage();
+		}
 		body += 4;
 		memcpy(entityBody, body, message + len - body);
 		AlreadySavedBodyLength = message + len - body;
 	}catch(std::out_of_range e)
 	{
-		//std::cout << "初始化消息体时发生异常:" << e.what() << std::endl;
 	}
 }
 
@@ -266,7 +271,7 @@ bool ResponseMessage::openFileSetBody(std::string const &fileName)
 	{
 		//std::cout << fileName << "打开失败" << std::endl;
 		file.close();
-		return false;
+		throw UnableToOpenResource();
 	}
 	//获取文件大小
 	file.seekg(0, std::ios::end);
@@ -319,4 +324,14 @@ int ResponseMessage::getByte(char *&buf)
 	memcpy(buf, rs.c_str(), rs.size());
 	memcpy(buf + rs.size(), entityBody, bodyLen);
 	return len;
+}
+
+char const * IncompleteMessage::what() const
+{
+	return "不完整的消息体";
+}
+
+char const * UnableToOpenResource::what() const
+{
+	return "无法打开资源";
 }

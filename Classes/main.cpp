@@ -29,7 +29,6 @@ public:
 				pResponse->openFileSetBody(root + "/index.html");
 				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
-				pResponse->setVersion("HTTP/1.1");
 				pResponse->setHeaders("Content-Type", "text/html");
 				return true;
 			}
@@ -39,7 +38,6 @@ public:
 				auto p = lg.attractionsInformation();
 				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
-				pResponse->setVersion("HTTP/1.1");
 				Json::json json;
 				auto obj = new Json::object;
 				auto arr = new Json::array;
@@ -75,7 +73,6 @@ public:
 					pResponse->setBody("false", sizeof("false"));
 				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
-				pResponse->setVersion("HTTP/1.1");
 				return true;
 			}
 			else if (URL == "/deleteviewinfo")
@@ -89,7 +86,6 @@ public:
 					pResponse->setBody("false", sizeof("false"));
 				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
-				pResponse->setVersion("HTTP/1.1");
 				return true;
 			}
 			else if (URL == "/updateviewinfo")
@@ -103,7 +99,6 @@ public:
 					pResponse->setBody("false", sizeof("false"));
 				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
-				pResponse->setVersion("HTTP/1.1");
 				return true;
 			}
 			else if (URL == "/getallviewlistinfo")
@@ -160,7 +155,6 @@ public:
 				pResponse->setBody(ResJson.toJsonFile().data(), ResJson.toJsonFile().length());
 				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
-				pResponse->setVersion("HTTP/1.1");
 				return true;
 			}
 			else if (URL == "/login")
@@ -182,7 +176,6 @@ public:
 				}
 				pResponse->setStatus(std::to_string(ResponseMessage::HTTPStatusCode::ok));
 				pResponse->setPhrase(ResponseMessage::getStatusString(ResponseMessage::HTTPStatusCode::ok));
-				pResponse->setVersion("HTTP/1.1");
 				return true;
 			}
 		}
