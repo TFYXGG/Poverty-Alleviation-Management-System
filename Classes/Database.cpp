@@ -3,17 +3,25 @@
 #include <iostream>
 #include <mutex>
 
-Database* Database::instance = nullptr;
+bool Database::sign = false;
+HENV Database::henv = nullptr;
 
-Database::Database(string const &serverName, string const &userName, string const &passWorld) : hdbc(nullptr),henv(nullptr)
+mutex l;
+
+Database::Database(string const &serverName, string const &userName, string const &passWorld) : hdbc(NULL)
 {
-	SQLRETURN rcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &henv);
-	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
-	// *) 设置ODBC版本的环境属性
-	rcode = SQLSetEnvAttr(henv, SQL_ATTR_ODBC_VERSION, (void *)SQL_OV_ODBC3, SQL_IS_INTEGER);
-	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
+	if (!sign)
+	{
+		l.lock();
+		if (!sign)
+		{
+			Init();
+			sign = true;
+		}
+		l.unlock();
+	}
 	// *) 分配连接句柄
-	rcode = SQLAllocHandle(SQL_HANDLE_DBC, henv, &hdbc);
+	SQLRETURN rcode = SQLAllocHandle(SQL_HANDLE_DBC, henv, &hdbc);
 	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
 	// *) 连接数据源
 	rcode = SQLConnect(hdbc, (SQLCHAR *)serverName.data(), serverName.length(),
@@ -120,18 +128,13 @@ Database::~Database()
 	SQLFreeHandle(SQL_HANDLE_ENV, henv);
 }
 
-mutex L;
-
-Database * Database::getInstance()
+void Database::Init()
 {
-	if (instance == nullptr)
-	{
-		L.lock();
-		if (instance == nullptr)
-		{
-			instance = new Database(serverName, userName, passWorld);
-		}
-		L.unlock();
-	}
-	return instance;
+	SQLRETURN rcode;
+	// *) 申请环境句柄
+	rcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &henv);
+	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
+	// *) 设置ODBC版本的环境属性
+	rcode = SQLSetEnvAttr(henv, SQL_ATTR_ODBC_VERSION, (void *)SQL_OV_ODBC3, SQL_IS_INTEGER);
+	assert(!(rcode != SQL_SUCCESS && rcode != SQL_SUCCESS_WITH_INFO));
 }

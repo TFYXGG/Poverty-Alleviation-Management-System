@@ -9,17 +9,11 @@
 
 using namespace std;
 
-string serverName = "fpglxt";
-string userName = "sa";
-string passWorld = "1019334418Zz";
 
 class PovertyAlleviationManagementSystem:public HandleThread
 {
 public:
-	PovertyAlleviationManagementSystem(Socket *s) :HandleThread(s)
-	{
-		logic::setDatabase(Database::getInstance());
-	}
+	PovertyAlleviationManagementSystem(Socket *s) :HandleThread(s){	}
 	bool onHttp()
 	{
 		std::string method = pRequest->getMethod();
@@ -182,6 +176,7 @@ public:
 
 int main()
 {
+	logic::setDatabase(new Database("fpglxt", "sa", "1019334418Zz"));
 	PovertyAlleviationManagementSystem::setRoot(R"(../Resource/dist)");
 	MessageHandle<PovertyAlleviationManagementSystem> mh(3000);
 	mh();
